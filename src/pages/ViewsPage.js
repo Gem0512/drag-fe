@@ -514,7 +514,7 @@ export default function ViewsPage({
                     width:"100%",
                     marginRight:"100px",
                     padding:"5px",
-                    // marginTop:"-10px",
+                    marginTop:"5px",
                     listStyle:"none",
                     display:"flex"
                   }}> {Object.values(item).map((value, index) => (
