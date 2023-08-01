@@ -218,14 +218,9 @@ export default function ViewsPage({
           setRows(updatedRows);
           handleClose();
       }
-    
-    // console.log(localStorage.getItem('change1'));
-    console.log(inputValue1, inputValue2);
-    console.log(sample1, sample2);
+
   };
 
-
-  console.log(rows);
 
 
 
@@ -361,18 +356,26 @@ export default function ViewsPage({
   }
   
  const [item_, setItem_]= useState();
+const [boolInput, setBoolInput]= useState(false);
+const [boolText, setBoolText]= useState(false);
+const [boolLabel, setBoolLabel]= useState(false);
+
 
   const handleEditClick = (item) => {
+   
     handleOpen_();
     setItem_(item);
     if(item.name){
       setNameState(item.name);
+      setBoolInput(true);
     }
     if(item.description){
       setTextState(item.description);
+      setBoolText(true);
     }
     if(item.label){
       setLabelState(item.label);
+      setBoolLabel(true);
     }
     const pick =item._id;
 
@@ -470,20 +473,17 @@ export default function ViewsPage({
   const handleOpen_ = () => setOpen_(true);
   const handleClose_ = () => setOpen_(false);
 
-  
-
-  console.log(nameState);
-
 
   return (
     <div
     style={{
       width: '100%',
-      paddingBottom:"30px"
+      paddingBottom:"30px",
+      paddingLeft:"20px"
     }}>
           
     <div style={{
-      marginLeft:"30px"
+      paddingLeft:"30px"
     }}>
       {
         appAuthors.map((app, index) => (
@@ -514,7 +514,7 @@ export default function ViewsPage({
                     width:"100%",
                     marginRight:"100px",
                     padding:"5px",
-                    // marginTop:"-10px",
+                    marginTop:"5px",
                     listStyle:"none",
                     display:"flex"
                   }}> {Object.values(item).map((value, index) => (
@@ -522,7 +522,7 @@ export default function ViewsPage({
                 style={{
                 padding:"5px 20px",
                 // width:"90%",
-                width:"60%",
+                width:"65%",
               }}
                 key={index}>{value}</td>
                 
@@ -530,7 +530,7 @@ export default function ViewsPage({
                 <div
                 style={{
                   display:"flex",
-                  width:"30%",
+                  width:"40%",
                   justifyContent:"flex-end"
                 }}>
                   <div
@@ -594,7 +594,7 @@ export default function ViewsPage({
               <Typography variant='h5'>Edit form</Typography>
               <hr></hr>
               {
-                nameState && (
+                boolInput && (
                   
                   <Box
                   sx={{
@@ -612,7 +612,7 @@ export default function ViewsPage({
                 )
               }
                 {
-                  textState &&(
+                  boolText &&(
                     <Box
                   sx={{
                     margin:"30px 0"
@@ -628,7 +628,7 @@ export default function ViewsPage({
                   )
                 }
                {
-                labelState && (
+                boolLabel && (
                   <Box
                   sx={{
                     margin:"20px 0"

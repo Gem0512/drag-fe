@@ -628,7 +628,7 @@ export default function Home(
 
     // console.log(clickedIndexes);
     const [nameApp, setNameApp]= useState('');
-    console.log(nameApp);
+   
   return (
 
     <div className="home-all">
@@ -815,6 +815,8 @@ export default function Home(
           // handleUpdateApp={handleUpdateApp}
           isChecked={isChecked}
           setNameApp={setNameApp}
+          renderButton={renderButton}
+          renderButton2={renderButton2}
           sx={{
             width:"100%",
             

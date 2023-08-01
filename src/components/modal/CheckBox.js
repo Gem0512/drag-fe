@@ -113,6 +113,9 @@ export default function CheckBox(
             };
 
 
+            localStorage.setItem("valueSample1", valueSample1);
+            localStorage.setItem("valueSample2", valueSample2);
+            localStorage.setItem("inputValueFromCheckBox", inputValueFromCheckBox);
 
 
 

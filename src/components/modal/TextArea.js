@@ -51,7 +51,7 @@ export default function TextArea({
         handleRequiredNameChange(event);
       }
 
-
+localStorage.setItem("inputValueFromTextArea", inputValueFromTextArea);
 
 
     return ( 

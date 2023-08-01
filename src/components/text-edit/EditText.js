@@ -14,7 +14,9 @@ export default function Index({ setCheckLabel, labelValue, setDes, des }) {
       
       
         setDes(text);
+        localStorage.setItem('label', text);
     };
+    
 
 
 

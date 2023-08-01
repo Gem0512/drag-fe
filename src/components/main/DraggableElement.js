@@ -17,7 +17,7 @@ import { OutlinedInput } from '@mui/material';
 import AbcIcon from '@mui/icons-material/Abc';
 import Stack from '@mui/material/Stack';
 import CloseIcon from '@mui/icons-material/Close';
-import Index from "../text-edit/index"
+import EditText from "../text-edit/EditText"
 import TextArea from "../modal/TextArea";
 import CheckBox from "../modal/CheckBox"
 library.add(fas);
@@ -169,7 +169,7 @@ const handleEither=(event) => {
 
   const handleEditorChange = (text) => {
     setEditorText(text);
-    localStorage.setItem('label', text);
+   
   };
 
 
@@ -206,6 +206,7 @@ const handleEither=(event) => {
     setFormValue1(event.target.checked);
   };
 
+  const [ des, setDes]= useState();
 
   const handleButtonClick = () => {
     setTextValueCheckBox(inputValueFromCheckBox || text)
@@ -222,7 +223,6 @@ const handleEither=(event) => {
     // setTextAreaValueSave(inputValueFromTextArea || "Text Area" );
     onSave(inputValue1, inputValue2);
    console.log(text1);
- 
       
   };
 
@@ -841,11 +841,13 @@ const handleEither=(event) => {
                   }
                   {type==="label" &&
                   (       
-                      <Index 
+                      <EditText 
                       onTextChange={handleEditorChange}
                       setCheckLabel={setCheckLabel}
                       labelValue={labelValue}
-                      ></Index>        
+                      setDes={setDes}
+                      des={des}
+                      ></EditText>        
                   )}
                   {
                     type==="textarea" && (
@@ -954,7 +956,7 @@ const handleEither=(event) => {
           
            type="text" readOnly />
         )}
-        {type === "label" && <p>{editorText}</p>}
+        {type === "label" && <p>{des}</p>}
         {type === "textarea" && 
             <textarea name="comments" cols="20" rows="4"
             style={{

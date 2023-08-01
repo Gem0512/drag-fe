@@ -14,6 +14,9 @@ import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt';
 import EditNoteIcon from '@mui/icons-material/EditNote';
 import PublishIcon from '@mui/icons-material/Publish';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
+import FormGroup from '@mui/material/FormGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Checkbox from '@mui/material/Checkbox';
 
 const style = {
   position: 'absolute',
@@ -43,7 +46,9 @@ export default function AdminPage({
     storedUser,
     appAuthors,
     isChecked,
-    setNameApp
+    setNameApp,
+    renderButton,
+    renderButton2,
     // handleUpdateApp
 }) {
   const [open, setOpen] = React.useState(false);
@@ -207,9 +212,39 @@ export default function AdminPage({
   const foundNewApp = apps.find(app => app._id === adminNewApp);
 
   // console.log(foundNewApp);
+  const valueSample1= localStorage.getItem("valueSample1");
+const valueSample2= localStorage.getItem("valueSample2");
+const inputValueFromCheckBox= localStorage.getItem("inputValueFromCheckBox");
+  // console.log(isCheckedLocal);
+// console.log(inputFinal)
+
+const [isPicked, setIsPicked] = useState(false); 
+console.log(isPicked);
+  const [isPicked1, setIsPicked1] = useState(false); 
+  console.log(isPicked1);
+const [sample1, setSample1]=  useState();
+
+const [sample2, setSample2]=  useState();
+
+const handleCheckboxPicked = (event) => {
+  setIsPicked(event.target.checked);
+  if(isPicked){
+    setSample1(valueSample1);
+  }
+  else setSample1('');
+};
+const handleCheckboxPicked1 = (event) => {
+  setIsPicked1(event.target.checked); 
+  if(isPicked1){
+    setSample2(valueSample2);
+  }
+  else setSample2('');
+};
 
 
   const label = localStorage.getItem("label");
+  const textAreaLocal = localStorage.getItem("inputValueFromTextArea");
+  console.log(label);
 
     const [input, setInput]= useState('');
     const [textArea, setTextArea]= useState('');
@@ -218,7 +253,7 @@ export default function AdminPage({
 
     const handleSubmit = async (event) => {
       setOpen(false);
-      axios.post('http://localhost:4000/api/create-item', { name: input, description: textArea, label: label, inside: adminNewApp  })
+      axios.post('http://localhost:4000/api/create-item', { name: input, description: textArea, sample1: sample1, sample2: sample2, label: label, inside: adminNewApp  })
       .then((response) => {
         console.log(response.data); // In thông tin về box đã được lưu vào MongoDB
         fetchItems1();
@@ -229,7 +264,7 @@ export default function AdminPage({
   
  
     
-    // console.log( input,"/",textArea,"/",label );
+    console.log( sample1,"/",sample2,"/",label );
     handleCloseNew();
 
        
@@ -252,8 +287,9 @@ export default function AdminPage({
 
   const inputFinal = localStorage.getItem('inputValue');
   const isCheckedLocal= (localStorage.getItem('isChecked'));
-  // console.log(isCheckedLocal);
-// console.log(inputFinal)
+  
+
+
   return (
 
     <div
@@ -479,6 +515,7 @@ export default function AdminPage({
                     <div
                           style={{
                             margin:"10px 0 20px 10px",
+                            paddingLeft:"10px"
                           }}>
                           <label
                           style={{
@@ -498,9 +535,46 @@ export default function AdminPage({
                              <TextField 
                              sx={{
                               width:"100%"
-                             }}id="outlined-basic"  onChange={(e) => setTextArea(e.target.value)} value={textArea} label={textAreaValueSave||"Text area"} variant="outlined" />
+                             }}id="outlined-basic"  onChange={(e) => setTextArea(e.target.value)} value={textArea} label={textAreaLocal||"Text area"} variant="outlined" />
                           
                           </div>
+                  )}
+                  {item === '5' && (
+                    <Box 
+                    sx={{
+                      paddingLeft:"10px"
+                    }}>
+                    <Typography
+                    sx={{
+                      fontWeight:"bold",
+                      marginTop:"10px"
+                    }}>
+                      {inputValueFromCheckBox|| "Check box"}
+                    </Typography>
+                    <FormGroup aria-label="position" row>
+                      <FormControlLabel
+                        value="end"
+                        control={<Checkbox />}
+                        label={valueSample1}
+                        labelPlacement="end"
+                        checked={isPicked} 
+                        onChange={handleCheckboxPicked}
+                        // readOnly
+                      />
+                      {renderButton()}
+                      <FormControlLabel
+                        value="end"
+                        control={<Checkbox />}
+                        label={valueSample2}
+                        labelPlacement="end"
+                        checked={isPicked1} 
+                        onChange={handleCheckboxPicked1}
+                        // disabled
+                      />
+                      {renderButton2()}
+                    </FormGroup>
+       
+                    </Box>
                   )}
                   
               </Box>
@@ -509,7 +583,7 @@ export default function AdminPage({
                 <Box
                 sx={{
                   display:"flex",
-
+                  marginTop:"30px"
                 }}>
                     <Button 
                   sx={{
