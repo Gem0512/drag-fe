@@ -670,7 +670,7 @@ export default function Home(
          onClick={()=> {
         window.location.reload();
        }}
-        label="Views" {...a11yProps(1)} />
+        label="Views data" {...a11yProps(1)} />
           <Tab sx={{
           padding:"10px 50px",
           border: "1px solid #ccc",

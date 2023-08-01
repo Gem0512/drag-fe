@@ -376,18 +376,19 @@ export default function AdminPage({
       {
         appAuthors.map((app, index) => (
           <div key={app._id}>
-            <p
-              style={{
+            
+              <Button
+            
+              sx={{
                 color: "blue",
-                padding: "10px 15px",
+                padding: "15px 20px",
                 backgroundColor: "#ccc",
                 margin: "10px",
                 display: "flex",
                 justifyContent: "center",
                 borderRadius: "5px"
               }}
-            >
-              <Button
+            
                 id={`basic-button-${index}`} 
                 aria-controls={`basic-menu-${index}`} 
                 aria-haspopup="true"
@@ -397,7 +398,7 @@ export default function AdminPage({
                 {app.name}
                 <ArrowDropDownIcon />
               </Button>
-            </p>
+            
             <Menu
               id={`basic-menu-${index}`} 
               anchorEl={anchorEl}
@@ -448,34 +449,29 @@ export default function AdminPage({
             >
               <Box sx={style}>
               <h2>Form Submit</h2>
-              <hr></hr>
+              <hr
+              style={{
+                marginBottom:"30px"
+              }}></hr>
               {
                 foundNewApp?.items.map((item, index) => (
-              <div key={index}>
+              <Box
+              
+              key={index}
+              >
               {item === '1' && (
                     <div
                           style={{
                             margin:"10px",
                           }}>
 
-                          {
-                            isCheckedLocal &&(
-                              <label name="input"
-                                style={{
-                                fontWeight:"bold",
-                                marginLeft:"-10px",
-                                display:"block"
-                            }}>{inputFinal}</label>
-                            )
-                          }
-                           
-                            <input
-                            value={input}
-                            onChange={(e) => setInput(e.target.value)}
-                            style={{
-                              padding: "10px"
-                            }}
-                            for="input"></input>
+                      
+                             <TextField 
+                             sx={{
+                              width:"100%",
+                              marginBottom:"20px"
+                             }}
+                             id="outlined-basic" onChange={(e) => setInput(e.target.value)} value={input} label={inputFinal} variant="outlined" />
                             {/* <p>Số kí tự{}</p> */}
                           </div>
                   )}
@@ -498,27 +494,33 @@ export default function AdminPage({
                             margin:"10px 0 20px 10px",
 
                           }}>
-                            <label 
-                            style={{
-                            fontWeight:"bold",
-                            marginLeft:"-10px",
-                            display:"block"
-                          }}
-                          name="textarea">{textAreaValueSave||"Text area"}</label>
-                            <textarea 
-                            style={{
-                              width:"300px",
-                              padding:"10px 0 0 5px"
-                            }}
-                            value={textArea}
-                            onChange={(e) => setTextArea(e.target.value)}
-                            for="textarea"></textarea>
+                           
+                             <TextField 
+                             sx={{
+                              width:"100%"
+                             }}id="outlined-basic"  onChange={(e) => setTextArea(e.target.value)} value={textArea} label={textAreaValueSave||"Text area"} variant="outlined" />
+                          
                           </div>
                   )}
                   
-              </div>
+              </Box>
             ))
                 }
+                <Box
+                sx={{
+                  display:"flex",
+
+                }}>
+                    <Button 
+                  sx={{
+                    background:"#ccc",
+                    padding:"10px 15px",
+                    color:"black",
+                    // ':hover':{
+                    //   backgroundColor:"green"
+                    // }
+                  }}
+                    onClick={handleCloseNew}>Cancel</Button>
                 <div
                 style={{
                   display:"flex",
@@ -536,6 +538,7 @@ export default function AdminPage({
                   }}
                     onClick={handleSubmit}>Submit</Button>
                 </div>
+                </Box>
                 
               </Box>
             </Modal>
@@ -584,6 +587,8 @@ export default function AdminPage({
                     aria-describedby="modal-modal-description"
                 >
                     <Box sx={style}>
+                     <Typography variant="h5" gutterBottom>Add User</Typography>
+                     <hr></hr>
                       <Autocomplete   
                         multiple
                         limitTags={2}
@@ -595,7 +600,8 @@ export default function AdminPage({
                         renderInput={(params) => (
                             <TextField {...params} label="Add user..." placeholder="Favorites" />
                         )}
-                        sx={{ width: '400px' }}
+                        sx={{ width: '400px',
+                        marginTop:"35px" }}
                         />
 
                         <h3>Các User đã được add</h3>
@@ -611,7 +617,7 @@ export default function AdminPage({
                               backgroundColor:"white",
                               boxShadow: "rgba(0, 0, 0, 0.24) 0px 3px 8px",
                               borderRadius:"5px",
-                              padding:"5px",
+                              padding:"5px 10px",
                               width:"70px",
                               display:"flex",
                               justifyContent:"center"
@@ -624,7 +630,7 @@ export default function AdminPage({
                         <div
                         style={{
                             display:"flex",
-                            margin:"20px 0px 0px 0px",
+                            margin:"30px 0px 0px 0px",
                             justifyContent:"flex-end",
                             width:"100%"
                         }}>

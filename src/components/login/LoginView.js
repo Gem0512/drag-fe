@@ -4,7 +4,8 @@ import axios from 'axios';
 import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import { OutlinedInput, Box, Typography,Button } from '@mui/material';
-
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const LoginView = ({
   users,
@@ -16,29 +17,22 @@ const LoginView = ({
   role,
   setRole,
 }) => {
-  console.log(email);
+  // console.log(email);
+  const [toastState, setToastState]= useState(false);
 
   const handleLogin = async (event) => {
     event.preventDefault(); // Ngăn chặn sự kiện submit mặc định của form
-            
-      // for (let i = 0; i < users.length; i++) {
-      //   const user = users[i];
-  
-      
-      // }
-
-      // setRole('admin'); 
-      let a=1;
-      console.log(users);
       for (let i = 0; i < users.length; i++) {
         const user = users[i];
         if(email===user.email && password===user.password){
           window.location.href = '/home';
-          alert("Đăng nhập thành công");
-          a=0;
+          // alert("Đăng nhập thành công");
+          notify();
+          // <ToastContainer />
+          setToastState(true)
         }
       }
-      if(a===1) alert("Tài khoản không hợp lê");
+      if(toastState) alert("Tài khoản không hợp lê");
   
       // if(localStorage.getItem('role')==="admin" || localStorage.getItem('role')==="user") 
       // {
@@ -90,41 +84,86 @@ const LoginView = ({
 
   const handleChangeEmail=(event)=>{
     setEmailValue(event.target.value);
+    if(emailValue && passWordValue && userNameValue){
+      setRegister(true);
+    }
+    else{
+      setRegister(false); 
+    }
   }
 
   const handleChangePassword=(event)=>{
     setPasswordValue(event.target.value);
+    if(emailValue && passWordValue && userNameValue){
+      setRegister(true);
+    }
+    else{
+      setRegister(false); 
+    }
   }
 
   const handleChangeUserName=(event)=>{
     setUserNameValue(event.target.value);
+    if(emailValue && passWordValue && userNameValue){
+      setRegister(true);
+    }
+    else{
+      setRegister(false); 
+    }
   }
   // console.log(emailValue, passWordValue, userNameValue);
+ const [register,setRegister]= useState(false);
 
   const handleRegister=()=>{
-    axios.post('http://localhost:4000/api/create-users', { email: emailValue, password: passWordValue, title: userNameValue })
-        .then((response) => {
-          console.log(response.data); // In thông tin về box đã được lưu vào MongoDB
-        })
-        .catch((error) => {
-          console.error(error);
-        });
-        console.log(emailValue, passWordValue, userNameValue);
+    if(emailValue && passWordValue && userNameValue){
+      axios.post('http://localhost:4000/api/create-users', { email: emailValue, password: passWordValue, title: userNameValue })
+      .then((response) => {
+        setRegister(true); // In thông tin về box đã được lưu vào MongoDB
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+    }
+    else {
+      setRegister(false); 
+    }
+
+    
+    
+   console.log(register);
   }
   
   localStorage.setItem('email', email);
   localStorage.setItem('password', password);
 
+  const notify = () => {
+    toast("Đăng nhập thành công!");
+  }
+  const notify1 = () => {
+    toast("Đăng nhập thất bại!");
+  }
+  const notify2 = () => {
+    toast("Đăng kí thành công!");
+  }
+
+  const notify3 = () => {
+    toast("Đăng kí thất bại!");
+  }
   return (
     <div className="css-fix">
         {
           login? (
             <div className="login-form">
       <h2>Login</h2>
+      
       <form onSubmit={handleLogin}>
         <div className="form-group">
           <label htmlFor="email">Email</label>
-          <input
+          <OutlinedInput
+          sx={{
+            backgroundColor:"white",
+            width:"100%"
+          }}
             type="email"
             id="email"
             value={email}
@@ -137,21 +176,24 @@ const LoginView = ({
             <div
             style={{
               display:"flex",
-              backgroundColor:"white",
-              paddingRight:"10px",
-              width:"355px",
-              border:"1px solid #ccc",
-              borderRadius:"5px"
+              
+              // paddingRight:"10px",
+              // width:"355px",
+              // border:"1px solid #ccc",
+              // borderRadius:"5px"
             }}>
-              <input
+              <OutlinedInput
               type={showPassword ? 'text' : 'password'}
               id="password"
               value={password}
               onChange={e => setPassword(e.target.value)}
               required
-              style={{
-                border:"none",
-                width:"340px"
+              sx={{
+                // border:"none",
+                height:"40px",
+                marginRight:"5px",
+                backgroundColor:"white",
+                width:"100%"
               }}
             />
             <div
@@ -177,6 +219,7 @@ const LoginView = ({
                 )
               }
             </div>
+            
 
             </div>
         </div>
@@ -184,9 +227,17 @@ const LoginView = ({
         style={{
           marginTop:"30px"
         }}
-        className="blogin" type="submit">Login</button>
+        className="blogin" type="submit"
+        onClick={ toastState?(
+          notify
+        ):(
+          notify1
+        )}
+        >Login</button>
+        <ToastContainer />
         <Box 
          style={{
+          marginTop:"10px",
           display:"flex",
           justifyContent:"flex-end",
           width:"100%",
@@ -205,6 +256,7 @@ const LoginView = ({
               <div>
               <div className="login-form">
       <h2>Register</h2>
+      <ToastContainer />
       <form >
         <div className="form-group">
           <label htmlFor="email">Email</label>
@@ -292,15 +344,26 @@ const LoginView = ({
         </div>
 
         <Button 
+        variant="contained" color="success"
         style={{
-          marginTop:"30px"
+          marginTop:"30px",
+          
         }}
-        onClick={handleRegister}
+        onClick={() =>{
+          handleRegister();
+          emailValue && passWordValue && userNameValue ?(
+            notify2()
+            ):(
+              notify3()
+            )
+
+           }}
         
         className="blogin" >Register</Button>
 
         <Box 
          style={{
+          marginTop:"10px",
           display:"flex",
           justifyContent:"flex-end",
           width:"100%",
@@ -309,6 +372,7 @@ const LoginView = ({
           }
         }}>
           <Button
+
              onClick={handleRegisterLogin}
           >Login</Button>
         </Box>

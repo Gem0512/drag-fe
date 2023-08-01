@@ -26,7 +26,8 @@ const style = {
   width: '45%',
   // height:auto,
   bgcolor: 'background.paper',
-  border: '2px solid #000',
+  border: '1px solid #ccc',
+  borderRadius:"5px",
   boxShadow: 24,
   p: 4,
 };

@@ -14,7 +14,8 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import "../components/css/ViewPage.css";
 import axios from "axios";
 import { OutlinedInput } from '@mui/material';
-
+import PostAddIcon from '@mui/icons-material/PostAdd';
+import TextField from '@mui/material/TextField';
 const columns = [
     { field: 'name', headerName: 'Name', width: 500 },
     { field: 'edit', 
@@ -77,7 +78,8 @@ const columns = [
     transform: 'translate(-50%, -50%)',
     width: 400,
     bgcolor: 'background.paper',
-    border: '2px solid #000',
+    border: '2px solid #ccc',
+    borderRadius:"5px",
     boxShadow: 24,
     p: 4,
   };
@@ -470,13 +472,14 @@ export default function ViewsPage({
 
   
 
-
+  console.log(nameState);
 
 
   return (
     <div
     style={{
-      width: '100%'
+      width: '100%',
+      paddingBottom:"30px"
     }}>
           
     <div style={{
@@ -485,10 +488,23 @@ export default function ViewsPage({
       {
         appAuthors.map((app, index) => (
           <div key={app._id}>
-             <h4> {app.name}</h4>
+             <Button sx={{
+                display:"flex",
+                marginTop:"30px",
+                marginBottom:"20px",
+             }}>
+             <PostAddIcon
+             sx={{
+              marginTop:"-2px",
+              marginRight:"5px"
+             }}></PostAddIcon>
+             <Typography>
+             {app.name}
+             </Typography>
+              </Button>
              
              {items.filter((row)=> row?.inside === app._id).map((item)=>(
-                <ul key={item.id}
+                <div key={item.id}
                 style={{
                   display:"flex"
                 }}>
@@ -498,7 +514,7 @@ export default function ViewsPage({
                     width:"100%",
                     marginRight:"100px",
                     padding:"5px",
-                    marginTop:"-10px",
+                    // marginTop:"-10px",
                     listStyle:"none",
                     display:"flex"
                   }}> {Object.values(item).map((value, index) => (
@@ -560,7 +576,7 @@ export default function ViewsPage({
 
                 </div>
               </tr>
-                </ul>
+                </div>
                   
              ))
              }
@@ -575,49 +591,55 @@ export default function ViewsPage({
               aria-describedby="modal-modal-description"
             >
               <Box sx={style_}>
+              <Typography variant='h5'>Edit form</Typography>
+              <hr></hr>
               {
                 nameState && (
-                  <Box>
-                      <Typography
+                  
+                  <Box
                   sx={{
-                    padding:"20px 0 5px 0"
-                  }}> Input</Typography>
-                    <OutlinedInput
-                    defaultValue={nameState}
-                      onChange={handleInputEdit}>
-                    </OutlinedInput>
+                    margin:"40px 0 30px 0"
+                  }}>
+                    <TextField 
+                    sx={{
+                      width:"100%"
+                    }}id="standard-basic" 
+                    onChange={handleInputEdit}
+                    label="Input" 
+                    value={nameState}  />
                   </Box>
+
                 )
               }
                 {
                   textState &&(
-                    <Box>
-                    <Typography
-                      sx={{
-                      padding:"20px 0 5px 0"
-                    }}> Textarea</Typography>
-                      <OutlinedInput
-                      onChange={handleTextEdit}
-                      defaultValue={textState}>
-                      </OutlinedInput>
-                    </Box>
+                    <Box
+                  sx={{
+                    margin:"30px 0"
+                  }}>
+                    <TextField 
+                    sx={{
+                      width:"100%"
+                    }}id="standard-basic" 
+                    onChange={handleTextEdit}
+                    label="Textarea" 
+                    value={textState}  />
+                  </Box>
                   )
                 }
                {
                 labelState && (
-                  <Box>
-                      <Typography
+                  <Box
+                  sx={{
+                    margin:"20px 0"
+                  }}>
+                    <TextField 
                     sx={{
-                    padding:"20px 0 5px 0"
-                  }}> Label</Typography>
-                    <OutlinedInput
-                    onChange={handleLabelEdit}
-                    sx={{
-                    margin:"0px 0 30px 0"
-                  }}
-                    defaultValue={labelState}>
-
-                    </OutlinedInput>
+                      width:"100%"
+                    }}id="standard-basic" 
+                    onChange={handleLabelEdit} 
+                    label="Label" 
+                    value={labelState}  />
                   </Box>
                 )
                }
@@ -629,7 +651,11 @@ export default function ViewsPage({
                   width:"100%",
                   // backgroundColor:"#ccc"
                 }}>
-                    <Button onClick={handleSaveItemEdit}>Save</Button>
+                    <Button 
+                    sx={{
+                      padding:"10px 20px"
+                    }}
+                    onClick={handleSaveItemEdit} variant="contained">Save</Button>
                 </Box>
               
               </Box>

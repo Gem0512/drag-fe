@@ -137,8 +137,9 @@ export default function UserPage({
             ))
           } */}
           {appsEither.map((app, index) => (
-          <div
-          style={{
+          <div>
+               <Button 
+               sx={{
             marginRight:"25px",
             padding:"5px",
             backgroundColor:"white",
@@ -147,10 +148,11 @@ export default function UserPage({
               backgroundColor:"#ccc"
             },
             borderRadius:"5px",
+            padding:"10px 15px",
             boxShadow: "rgba(0, 0, 0, 0.24) 0px 3px 8px",
          
-          }} key={index}>
-               <Button onClick={() =>{handleOpen(); setIdItemUser(app._id);}}> {app.name}</Button>
+          }} key={index}
+          onClick={() =>{handleOpen(); setIdItemUser(app._id);}}> {app.name}</Button>
                <Modal
                   open={open}
                   onClose={handleClose}
@@ -229,11 +231,24 @@ export default function UserPage({
                           ))
                               }
                        
-                            
+                  <Box sx={{
+                    display:"flex",
+                    marginTop:"40px"
+                  }}>
+                     <Button
+                          onClick={handleClose}
+                          sx={{
+                              backgroundColor:'#ccc',
+                              padding:"10px",
+                              color:"black",
+                             
+                              
+                          }}>Close</Button>
                             <div
                             style={{
                                 display:"flex",
-                                justifyContent:"flex-end"
+                                justifyContent:"flex-end",
+                                width:"100%"
                             }}>
                                 <Button
                                 onClick={handleSubmit}
@@ -248,6 +263,8 @@ export default function UserPage({
                                     
                                 }}>Submit</Button>
                             </div>
+
+                  </Box>
 
                   </Box>
                 </Modal>
