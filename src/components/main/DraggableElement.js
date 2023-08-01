@@ -316,7 +316,7 @@ const handleEither=(event) => {
   // console.log(text1, inputValueSave);
   localStorage.setItem('inputValue', inputValueSave);
   const inputFinal =localStorage.getItem('inputValue');
-console.log(inputFinal);
+// console.log(inputFinal);
 
   return (
     <div className="item-drag" ref={dropRef}

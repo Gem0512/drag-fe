@@ -10,8 +10,10 @@ import MenuItem from '@mui/material/MenuItem';
 import axios from 'axios'
 import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
-
-
+import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt';
+import EditNoteIcon from '@mui/icons-material/EditNote';
+import PublishIcon from '@mui/icons-material/Publish';
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 
 const style = {
   position: 'absolute',
@@ -40,7 +42,8 @@ export default function AdminPage({
     // setListAppAuthor,
     storedUser,
     appAuthors,
-    isChecked
+    isChecked,
+    setNameApp
     // handleUpdateApp
 }) {
   const [open, setOpen] = React.useState(false);
@@ -405,10 +408,34 @@ export default function AdminPage({
               }}
             >
             {/* onClick={() => handleChangePage(0)} */}
-              <MenuItem onClick={() => { setSelectedItem(app._id); setOpen2(true); }}>Add user</MenuItem>
-              <MenuItem onClick={()=> {setIdItemsDrop(app._id); handleGoToPage1()} }>Edit</MenuItem>
-              <MenuItem onClick={()  => {handleOpenNew(); setAdminNewApp(app._id);}}>Record</MenuItem>
-              <MenuItem onClick={() => {handleClose1(index); setAppDelete(index); handleDeleteApp(app._id); handleUpdateApp(app._id);}}>Delete</MenuItem>
+              <MenuItem onClick={() => { setSelectedItem(app._id); setOpen2(true); }}>
+              <PersonAddAltIcon
+              sx={{
+                marginRight:"5px",
+                marginTop:"-5px"
+              }}></PersonAddAltIcon>
+              Add user</MenuItem>
+              <MenuItem onClick={()=> {setNameApp(app.name);setIdItemsDrop(app._id); handleGoToPage1()} }>
+              <EditNoteIcon
+              sx={{
+                marginRight:"5px",
+                marginTop:"-5px"
+              }}></EditNoteIcon>
+              Edit</MenuItem>
+              <MenuItem onClick={()  => {handleOpenNew(); setAdminNewApp(app._id);}}>
+              <PublishIcon
+              sx={{
+                marginRight:"5px",
+                marginTop:"-5px"
+              }}></PublishIcon>
+              Record</MenuItem>
+              <MenuItem onClick={() => {handleClose1(index); setAppDelete(index); handleDeleteApp(app._id); handleUpdateApp(app._id);}}>
+              <DeleteOutlineIcon
+              sx={{
+                marginRight:"5px",
+                marginTop:"-5px"
+              }}></DeleteOutlineIcon>
+              Delete</MenuItem>
             </Menu>
           </div>
         ))

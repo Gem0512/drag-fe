@@ -627,7 +627,8 @@ export default function Home(
     }
 
     // console.log(clickedIndexes);
-
+    const [nameApp, setNameApp]= useState('');
+    console.log(nameApp);
   return (
 
     <div className="home-all">
@@ -642,6 +643,7 @@ export default function Home(
           handleClick={handleClick}
         openActive={openActive}
         handleCloseActive={handleCloseActive}
+        nameApp={nameApp}
         ></Name>
       </div>
 
@@ -812,6 +814,7 @@ export default function Home(
           appAuthors={appAuthors}
           // handleUpdateApp={handleUpdateApp}
           isChecked={isChecked}
+          setNameApp={setNameApp}
           sx={{
             width:"100%",
             

@@ -575,34 +575,52 @@ export default function ViewsPage({
               aria-describedby="modal-modal-description"
             >
               <Box sx={style_}>
-              <Typography
-              sx={{
-                padding:"20px 0 5px 0"
-              }}> Input</Typography>
-                <OutlinedInput
-                defaultValue={nameState}
-                  onChange={handleInputEdit}>
-                </OutlinedInput>
-                <Typography
-                sx={{
-                padding:"20px 0 5px 0"
-              }}> Textarea</Typography>
-                <OutlinedInput
-                onChange={handleTextEdit}
-                defaultValue={textState}>
-                </OutlinedInput>
-                <Typography
-                sx={{
-                padding:"20px 0 5px 0"
-              }}> Label</Typography>
-                <OutlinedInput
-                onChange={handleLabelEdit}
-                sx={{
-                margin:"0px 0 30px 0"
-              }}
-                defaultValue={labelState}>
+              {
+                nameState && (
+                  <Box>
+                      <Typography
+                  sx={{
+                    padding:"20px 0 5px 0"
+                  }}> Input</Typography>
+                    <OutlinedInput
+                    defaultValue={nameState}
+                      onChange={handleInputEdit}>
+                    </OutlinedInput>
+                  </Box>
+                )
+              }
+                {
+                  textState &&(
+                    <Box>
+                    <Typography
+                      sx={{
+                      padding:"20px 0 5px 0"
+                    }}> Textarea</Typography>
+                      <OutlinedInput
+                      onChange={handleTextEdit}
+                      defaultValue={textState}>
+                      </OutlinedInput>
+                    </Box>
+                  )
+                }
+               {
+                labelState && (
+                  <Box>
+                      <Typography
+                    sx={{
+                    padding:"20px 0 5px 0"
+                  }}> Label</Typography>
+                    <OutlinedInput
+                    onChange={handleLabelEdit}
+                    sx={{
+                    margin:"0px 0 30px 0"
+                  }}
+                    defaultValue={labelState}>
 
-                </OutlinedInput>
+                    </OutlinedInput>
+                  </Box>
+                )
+               }
 
                 <Box
                 sx={{

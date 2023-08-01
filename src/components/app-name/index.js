@@ -50,7 +50,8 @@ export default function Name({
   currentTime,
   handleClick,
   openActive,
-  handleCloseActive
+  handleCloseActive,
+  nameApp
   
 }) {
 
@@ -71,14 +72,12 @@ export default function Name({
   //   }
   // };
 
-  const [value, setValue] = useState('New app');
+  const [value, setValue] = useState(nameApp);
 
   const handleChange = (event) => {
     setValue(event.target.value);
   };
-  const handle =(event) => {
-    console.log("aa");
-  };
+ 
 
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
@@ -92,6 +91,9 @@ export default function Name({
       setEmail(storedEmail);
     }
   }, []);
+  const [des, setDes]= useState('');
+// console.log(des);
+
 
   return (
     <div
@@ -156,7 +158,7 @@ export default function Name({
                       width:"300px",
                       
                     }}
-                      label="App Name"
+                      label={nameApp||"App name"}
                       value={value}
                       onChange={handleChange}
                     />
@@ -173,8 +175,8 @@ export default function Name({
                       paddingLeft:"8px",
                       color:"#A9A9A9",
                       fontWeight: 'bold'
-                    }}>Notes for app administrators does not exist</p>
-                    <button
+                    }}>{des||"Notes for app administrators does not exist"}</p>
+                    <Button
                     className="create"
                     style={{
                       marginTop:"-5px",
@@ -186,7 +188,7 @@ export default function Name({
                     }}
                     onClick={handleOpen}>
                       (Create)
-                    </button>
+                    </Button>
 
                     <Modal
                       open={open}
@@ -239,10 +241,12 @@ export default function Name({
                             <p>Only users who have the management permission for the app can view the notes.</p>
                           </div>
                         <Index 
+                        setDes={setDes}
+                        des={des}
                         sx={{
                           height:"400px"
                         }}
-                        onTextChange={handle}></Index>
+                       ></Index>
                         </div>
                         <div
                         style={{
