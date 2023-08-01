@@ -1,0 +1,16 @@
+.create:hover{
+    text-decoration: underline;
+    cursor: pointer;   
+}
+.menuIcon:hover{
+    cursor: pointer;
+    transition: transform(0.3s);
+                
+    transform: scale(1.1);
+}
+/* .menuIcon{
+    transition: transform(0.3s);
+                
+    transform: scale(1.1);
+                
+} */

@@ -1,0 +1,59 @@
+.container1 {
+    border-radius: 5px;
+    width: auto;
+    height: auto;
+    /* background: #FFBC97; */
+    position: relative;
+  }
+  
+  .resizeable {
+    position: absolute;
+    border: 1px solid #533535;
+    width: 300px;
+    height: 112px;
+    border-radius: 3px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-width: 250px;
+    max-width:580px;
+    min-height: 90px;
+    max-height: 300px;
+  }
+  
+  .resizer {
+    position: absolute;
+    /* background: rgb(217, 102, 102); */
+  }
+  
+  .resizer-r {
+    cursor: col-resize;
+    height: 100%;
+    right: 0;
+    top: 0;
+    width: 5px;
+  }
+  
+  .resizer-t {
+    cursor: row-resize;
+    height: 5px;
+    left: 0;
+    top: 0;
+    width: 100%;
+  }
+  
+  .resizer-b {
+    cursor: row-resize;
+    height: 5px;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+  }
+  
+  .resizer-l {
+    cursor: col-resize;
+    height: 100%;
+    left: 0;
+    top: 0;
+    width: 5px;
+  }
