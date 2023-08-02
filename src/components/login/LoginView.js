@@ -18,44 +18,51 @@ const LoginView = ({
   setRole,
 }) => {
   // console.log(email);
-  const [toastState, setToastState]= useState(false);
+  const [toastState, setToastState]= useState();
 
   const handleLogin = async (event) => {
     event.preventDefault(); // Ngăn chặn sự kiện submit mặc định của form
-      for (let i = 0; i < users.length; i++) {
-        const user = users[i];
-        if(email===user.email && password===user.password){
-          window.location.href = '/home';
-          // alert("Đăng nhập thành công");
-          notify();
-          // <ToastContainer />
-          setToastState(true)
-        }
-      }
-      if(toastState) alert("Tài khoản không hợp lê");
-  
-      // if(localStorage.getItem('role')==="admin" || localStorage.getItem('role')==="user") 
-      // {
-      //   window.location.href = '/home';
-      // alert("Đăng nhập thành công");
-      
+      // for (let i = 0; i < users.length; i++) {
+      //   const user = users[i];
+      //   if(email===user.email && password===user.password){
+      //     window.location.href = '/home';
+      //     // alert("Đăng nhập thành công");
+      //     notify();
+      //     // <ToastContainer />
+      //     setToastState(true)
+      //   }
       // }
+      // if(toastState) alert("Tài khoản không hợp lê");
+      console.log(email, password)
+      axios.post('http://localhost:4000/api/login', { email: email, password: password})
+      .then((response) => {
+        setRegister(true); // In thông tin về box đã được lưu vào MongoDB
+        window.location.href = '/home';
+        console.log(">>>>",email, password)
+        setToastState(true)
+        console.log(toastState)
+      })
+      .catch((error) => {
+        setToastState(false)
+        console.error("Xảy ra lỗi khi đăng nhập", error);
+        
+      });
 
   };
 
 
 
-  useEffect(() => {
-    // Gửi yêu cầu GET đến API endpoint /users khi component được render
-    axios.get('http://localhost:4000/users') // Cần chỉnh sửa URL nếu backend chạy ở cổng khác
-      .then(response => {
-        // Cập nhật state users với dữ liệu nhận được từ server
-        setUsers(response.data);
-      })
-      .catch(error => {
-        console.error('Lỗi khi lấy danh sách người dùng:', error);
-      });
-  }, []);
+  // useEffect(() => {
+  //   // Gửi yêu cầu GET đến API endpoint /users khi component được render
+  //   axios.get('http://localhost:4000/users') // Cần chỉnh sửa URL nếu backend chạy ở cổng khác
+  //     .then(response => {
+  //       // Cập nhật state users với dữ liệu nhận được từ server
+  //       setUsers(response.data);
+  //     })
+  //     .catch(error => {
+  //       console.error('Lỗi khi lấy danh sách người dùng:', error);
+  //     });
+  // }, []);
 
 
   const [showPassword, setShowPassword] = useState(true);
@@ -234,7 +241,7 @@ const LoginView = ({
           notify1
         )}
         >Login</button>
-        <ToastContainer />
+        {/* <ToastContainer /> */}
         <Box 
          style={{
           marginTop:"10px",
