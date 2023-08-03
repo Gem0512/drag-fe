@@ -33,7 +33,7 @@
     overflow-x: scroll;
     width: 80%;
     margin-right: 10px;
-    height: 700px;
+    height: 800px;
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(600px, max-content)); 
     /* grid-gap: 10px; */

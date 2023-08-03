@@ -1,6 +1,8 @@
 import React, { useRef, useEffect } from "react";
 import "./Resize.css";
 import DraggableElement from "../main/DraggableElement"
+import Box from '@mui/material/Box';
+
 
 function Resize(
     {      
@@ -34,7 +36,8 @@ function Resize(
     setSample1,
     setSample2,
     deleteItem,
-    handleChangeState
+    handleChangeState,
+    idItemsDrop
     }
 ) {
   const ref = useRef(null);
@@ -164,7 +167,7 @@ function Resize(
         <div ref={refTop} className="resizer resizer-t"></div>
         <div ref={refRight} className="resizer resizer-r"></div>
         <div ref={refBottom} className="resizer resizer-b"></div>
-        <p
+        <Box
         style={{
             width:"100%"
         }}>
@@ -201,8 +204,9 @@ function Resize(
             setSample1={setSample1}
             setSample2={setSample2}
             handleChangeState={handleChangeState}
+            idItemsDrop={idItemsDrop}
           />
-        </p>
+        </Box>
       </div>
     </div>
   );

@@ -49,6 +49,8 @@ export default function AdminPage({
     setNameApp,
     renderButton,
     renderButton2,
+    setSelectedItem,
+    selectedItem
     // handleUpdateApp
 }) {
   const [open, setOpen] = React.useState(false);
@@ -56,6 +58,7 @@ export default function AdminPage({
   const handleClose = () => setOpen(false);
 
   const handleGoToPage1 = () => {
+    localStorage.setItem("board", JSON.stringify(''));
     handleChangePage(null, 0);
   };
   const handleGoToPageApp = () => {
@@ -136,6 +139,8 @@ export default function AdminPage({
     // Đặt anchorEl cho menu hiện tại
     setAnchorEl(event.currentTarget);
   };
+
+  
   
   const handleClose1 = (index) => () => {
     // Tạo một bản sao của mảng state và đặt trạng thái đóng của menu tại vị trí tương ứng
@@ -173,7 +178,7 @@ export default function AdminPage({
 
 
   const [selectedOptions, setSelectedOptions] = useState([]);
-  const [selectedItem, setSelectedItem] = useState(null);
+
 
   const appWithId = apps.find((app) => app._id === selectedItem);
 
@@ -410,7 +415,7 @@ const handleCheckboxPicked1 = (event) => {
      } */}
      
       {
-        appAuthors.map((app, index) => (
+        appAuthors.length> 0 ? (appAuthors.map((app, index) => (
           <div key={app._id}>
             
               <Button
@@ -476,6 +481,15 @@ const handleCheckboxPicked1 = (event) => {
             </Menu>
           </div>
         ))
+      ):(
+        <Box
+        sx={{
+          paddingLeft:"80%"
+        }}
+        >
+          No item
+        </Box>
+      )
       }
       <Modal
               open={openNew}

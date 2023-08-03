@@ -19,25 +19,17 @@ const LoginView = ({
 }) => {
   // console.log(email);
   const [toastState, setToastState]= useState();
-
+  // const [isLogin, setIsLogin]= useState(false);
   const handleLogin = async (event) => {
+    localStorage.setItem("isLogin", false);
     event.preventDefault(); // Ngăn chặn sự kiện submit mặc định của form
-      // for (let i = 0; i < users.length; i++) {
-      //   const user = users[i];
-      //   if(email===user.email && password===user.password){
-      //     window.location.href = '/home';
-      //     // alert("Đăng nhập thành công");
-      //     notify();
-      //     // <ToastContainer />
-      //     setToastState(true)
-      //   }
-      // }
-      // if(toastState) alert("Tài khoản không hợp lê");
+      
       console.log(email, password)
       axios.post('http://localhost:4000/api/login', { email: email, password: password})
       .then((response) => {
         setRegister(true); // In thông tin về box đã được lưu vào MongoDB
         window.location.href = '/home';
+        localStorage.setItem("isLogin", true);
         console.log(">>>>",email, password)
         setToastState(true)
         console.log(toastState)
@@ -45,10 +37,22 @@ const LoginView = ({
       .catch((error) => {
         setToastState(false)
         console.error("Xảy ra lỗi khi đăng nhập", error);
-        
+        localStorage.setItem("isLogin", false);
+      });
+      console.log(email)
+
+
+      axios.post('http://localhost:4000/api/create-email', { email: email })
+      .then((response) => {
+        setRegister(true); // In thông tin về box đã được lưu vào MongoDB
+      })
+      .catch((error) => {
+        console.error(error);
       });
 
   };
+
+  if(localStorage.getItem("isLogin"))   window.location.href = '/home';
 
 
 
@@ -130,6 +134,9 @@ const LoginView = ({
       .catch((error) => {
         console.error(error);
       });
+
+      
+
     }
     else {
       setRegister(false); 

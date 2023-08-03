@@ -23,6 +23,19 @@ import AdminPage from "../../pages/AdminPage"
 import axios from 'axios';
 import Resize from "../resize/Resize"
 
+async function fetchData(itemId) {
+  try {
+    const response = await fetch(`http://localhost:4000/api/getItemById/${itemId}`);
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Error fetching data:', error);
+    return null;
+  }
+  
+}
+
+
 const ElementList = [
   { id: 1, type: "input", text: "Input" },
   { id: 2, type: "button", text: "Button" },
@@ -39,7 +52,6 @@ const ElementList = [
   { id: 13, type: "time", text: "Time" },
   { id: 14, type: "drop", text: "Drop down" },
 
-  // Thêm các thành phần khác nếu cần
 ];
 
 
@@ -118,7 +130,7 @@ export default function Home(
   const handleOpenActive = () => setOpenActive(true);
   const handleCloseActive = () => setOpenActive(false);
 
-
+  const [selectedItem, setSelectedItem] = useState(null);
 
 
  const [value, setValue] = React.useState(() => {
@@ -164,12 +176,26 @@ export default function Home(
       collect: (monitor) => ({
         isOver: !!monitor.isOver(),
       }),
+      
+      
     }));
+    if( board.length>0) localStorage.setItem("board", JSON.stringify(board));
+    // console.log(board)
+    //   setBoard(storedObject);
+    // console.log(board);
+    // const [storedObject,setStoredObject] = useState([]);
+    
+
+    // const handleClickSave =()=>{
+     const storedObject= [...(JSON.parse(localStorage.getItem('board')))];
+   
+    
   
     // const addElementToBoard = (id) => {
     //   const elementList = ElementList.filter((element) => id === element.id);
     //   setBoard((board) => [...board, elementList[0]]);
     // };
+   
     const addElementToBoard = (item, monitor) => {
       const elementList = ElementList.filter((element) => item.id === element.id);
       const newItem = {
@@ -178,7 +204,7 @@ export default function Home(
       };
       setBoard((board) => [...board, newItem]);
       setDroppedItems((prevItems) => [...prevItems, item.id]);
-
+      
     };
 
     
@@ -203,8 +229,9 @@ export default function Home(
         return element;
       });
       setBoard(updatedBoard);
-      
+    console.log(board)
     };
+   
 
     const showToastMessage = () => {
         toast.success('Form saved !', {
@@ -216,12 +243,39 @@ export default function Home(
         );
     };
 
+  
+
+
+
     const handleClick1 = () => {
+      const value1= localStorage.getItem("inputValue");
+    const value2= localStorage.getItem("inputValueFromTextArea");
+    const value3= localStorage.getItem("label");
+    const value4= localStorage.getItem("inputValueFromCheckBox");
       fetchItems1();
         const now = new Date();
         setCurrentTime(now.toLocaleTimeString());
         showToastMessage();
         handleAddItemDropItemDrop();
+
+        console.log(idItemsDrop, ">>>",value1, value2, value3, value4);
+
+        
+          // Gửi các giá trị đã chọn lên backend
+          axios.post('http://localhost:4000/api/saveTitle', { itemId: idItemsDrop,input: value1,text: value2, label: value3, checkBox: value4  })
+            .then(response => {
+              console.log(response.data);
+            })
+            .catch(error => {
+              console.error(error);
+            });
+        
+    
+        // window.location.reload();
+      localStorage.setItem("inputValue", "");
+    localStorage.setItem("inputValueFromTextArea", "");
+     localStorage.setItem("label", "");
+    localStorage.setItem("inputValueFromCheckBox", "");
         
       };
 
@@ -569,7 +623,7 @@ export default function Home(
     
             // setOpen2(false);
         }
-        
+       
       };
 
       const [idItemUser, setIdItemUser]= useState();
@@ -628,6 +682,19 @@ export default function Home(
 
     // console.log(clickedIndexes);
     const [nameApp, setNameApp]= useState('');
+
+
+    const [item, setItem] = useState(null);
+
+    useEffect(() => {
+      fetchData(idItemsDrop)
+        .then(data => setItem(data));
+        
+    }, [idItemsDrop]);
+  
+    const idItemSave =item?.items;
+    if(idItemSave)localStorage.setItem("listItemOld", JSON.stringify(idItemSave||[]));
+  
    
   return (
 
@@ -729,6 +796,10 @@ export default function Home(
             deleteState={deleteState}
             handleChangeState={handleChangeState}
             clickedIndexes={clickedIndexes}
+            idItemsDrop={idItemsDrop}
+            setBoard={setBoard}
+            storedObject={storedObject}
+            item={item}
           ></FormPage>
       </CustomTabPanel>
       
@@ -817,6 +888,8 @@ export default function Home(
           setNameApp={setNameApp}
           renderButton={renderButton}
           renderButton2={renderButton2}
+          setSelectedItem={setSelectedItem}
+          selectedItem={selectedItem}
           sx={{
             width:"100%",
             

@@ -66,7 +66,8 @@ function DraggableElement({
   setValueSample2,
   deleteItem,
   setDeleteState,
-  handleChangeState
+  handleChangeState,
+  idItemsDrop
   }) {
 
   const [{ isDragging }, drag] = useDrag(() => ({
@@ -90,6 +91,7 @@ function DraggableElement({
  const handleState =()=>{
   handleChangeState(id);
    console.log(id);
+   
  }
 
 
@@ -312,6 +314,7 @@ const handleEither=(event) => {
       setTextAreaValueSave(value);
     }
   }, []);
+  // console.log(text);
 
   // console.log(text1, inputValueSave);
   localStorage.setItem('inputValue', inputValueSave);
@@ -332,7 +335,7 @@ const handleEither=(event) => {
       }}>
 
 
-      {type==="input" &&
+      {(type==="input" || type=== '1' )&&
       <div
       style={{
         width:"55%"
@@ -396,19 +399,19 @@ const handleEither=(event) => {
       </div>
       }
       {
-        type==="label" && 
+        (type==="label"  || type=== '3' ) && 
           <div
           style={{
          
           width:"55%",
 
         }}>      
-          <p>{text}</p>
+          <p>{text|| "Label"}</p>
         </div>
       }
 
 
-      {type === "textarea" && 
+      {(type === "textarea"  || type=== '4' )&& 
           <div  style={{
           // marginLeft:"30px",
           width:"55%",
@@ -453,7 +456,7 @@ const handleEither=(event) => {
 
 
         {
-          type==="checkbox" && (
+          (type==="checkbox"  || type=== '5' ) && (
             <div  style={{
               width:"55%",
               height:"30px"
@@ -639,17 +642,7 @@ const handleEither=(event) => {
             </Button>
 
       
-            <button className="option" onClick={handleDelete}>
-            <img
-                style={{
-                  height: "15px",
-                  marginBottom: "-2px",
-                }}
-                src="https://icons.iconarchive.com/icons/ionic/ionicons/512/duplicate-outline-icon.png"
-                alt=""
-              ></img>
-              Duplicate
-            </button>
+           
 
             <button className="option" 
             onClick={handleEither}
@@ -722,7 +715,7 @@ const handleEither=(event) => {
                   Help?
                  </div>
 
-                  {type==="input" &&
+                  {(type==="input" || type=== '1' )&&
                    <div>
                    
                  
@@ -839,7 +832,7 @@ const handleEither=(event) => {
                  </div>
                    </div>
                   }
-                  {type==="label" &&
+                  {(type==="label" || type=== '3' ) &&
                   (       
                       <EditText 
                       onTextChange={handleEditorChange}
@@ -850,7 +843,7 @@ const handleEither=(event) => {
                       ></EditText>        
                   )}
                   {
-                    type==="textarea" && (
+                    (type==="textarea"|| type=== '4' )  && (
                       <TextArea 
                       inputValueFromTextArea={inputValueFromTextArea}
                       setInputValueFromTextArea={setInputValueFromTextArea} 
@@ -871,7 +864,7 @@ const handleEither=(event) => {
                     )
                   }
                   {
-                    type==="checkbox" && (
+                    (type==="checkbox" || type=== '5' )  && (
                       <div>
                         <CheckBox
                          open1={open}
@@ -942,7 +935,7 @@ const handleEither=(event) => {
         }}
       >
 
-        {type === "input" && (
+        {(type === "input" || type=== '1' ) && (
           
           <input className="input-card"
           style={{
@@ -956,8 +949,8 @@ const handleEither=(event) => {
           
            type="text" readOnly />
         )}
-        {type === "label" && <p>{des}</p>}
-        {type === "textarea" && 
+        {(type === "label"|| type=== '3' ) && <p>{des}</p>}
+        {(type === "textarea" || type=== '4' )&& 
             <textarea name="comments" cols="20" rows="4"
             style={{
               paddingTop:"8px",
@@ -968,7 +961,7 @@ const handleEither=(event) => {
             placeholder={valueDefault} 
             ></textarea>
         }
-        {type === "checkbox" && 
+        {(type === "checkbox" || type=== '5' )&& 
         <div
         style={{ 
           pointerEvents: 'none',

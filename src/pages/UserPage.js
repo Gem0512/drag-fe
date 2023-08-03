@@ -136,7 +136,8 @@ export default function UserPage({
               </div>
             ))
           } */}
-          {appsEither.map((app, index) => (
+          {
+            appsEither.length>0 ?(appsEither.map((app, index) => (
           <div>
                <Button 
                sx={{
@@ -269,7 +270,16 @@ export default function UserPage({
                   </Box>
                 </Modal>
           </div>
-        ))}
+        ))):
+        (
+          <Box
+          sx={{
+          paddingLeft:"80%"
+        }}>
+            No app
+          </Box>
+        )
+        }
         </div>
         </Box>
     </div>
