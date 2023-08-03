@@ -20,7 +20,8 @@ function App() {
     // Gọi API từ backend khi component được render
     axios.get('http://localhost:4000/api/email-last')
       .then((response) => {
-        setEmail(response.data.email); // Lưu thông tin người dùng cuối cùng vào state
+        setEmail(response.data.email);
+        localStorage.setItem("email",response.data.email ) // Lưu thông tin người dùng cuối cùng vào state
         console.log(response.data)
       })
       .catch((error) => {

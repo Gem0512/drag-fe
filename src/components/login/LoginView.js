@@ -52,7 +52,7 @@ const LoginView = ({
 
   };
 
-  if(localStorage.getItem("isLogin"))   window.location.href = '/home';
+  if(localStorage.getItem("isLogin")==="true")   window.location.href = '/home';
 
 
 
@@ -134,16 +134,10 @@ const LoginView = ({
       .catch((error) => {
         console.error(error);
       });
-
-      
-
     }
     else {
       setRegister(false); 
     }
-
-    
-    
    console.log(register);
   }
   

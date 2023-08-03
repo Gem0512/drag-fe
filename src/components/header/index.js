@@ -77,7 +77,9 @@ export default function PrimarySearchAppBar() {
   };
 
   const handleMenuClose1 = () => {
+    localStorage.setItem("isLogin", false);
     window.location.href = '/';
+
   };
 
   const handleMobileMenuOpen = (event) => {
