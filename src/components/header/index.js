@@ -114,6 +114,8 @@ const access_token = Cookies.get('access_token');
       })
    
     navigate('/');
+    Cookies.remove('access_token');
+    window.location.reload()
    }
    catch (error){
     console.log("Đã có lỗi khi logout:", error)

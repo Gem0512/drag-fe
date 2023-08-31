@@ -21,14 +21,14 @@ const LoginView = ({
   setRole,
 }) => {
 
-  useEffect(() => {
-    const myCookieValue = Cookies.get('access_token');
+  // useEffect(() => {
+  //   const myCookieValue = Cookies.get('access_token');
 
-    if (myCookieValue) {
-      // Điều hướng đến trang /home nếu có giá trị cookie
-      window.location.href = '/home';
-    }
-  }, []);
+  //   if (myCookieValue !== undefined) {
+  //     // Điều hướng đến trang /home nếu có giá trị cookie
+     
+  //   }
+  // }, []);
   // console.log(email);
   const notify = () => toast("Đăng ký thành công!");
 
@@ -46,7 +46,8 @@ const LoginView = ({
         Cookies.set('refresh_token', response.data.data.refresh_token, { expires: 14 });
         Cookies.set('user', JSON.stringify(response.data.data.user), { expires: 14 }); 
         // window.location.href = '/home';
-        navigate('/home');
+        // navigate('/home');
+          window.location.reload()
       })
       .catch((error) => {
        
@@ -54,6 +55,7 @@ const LoginView = ({
       
       });
       console.log(email)
+      // window.location.reload()
   };
 
   if(localStorage.getItem("isLogin")==="true")   window.location.href = '/home';

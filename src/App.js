@@ -7,7 +7,9 @@ import Home from "./components/main/home";
 import HomeRecords from "./components/records/HomeRecords"
 import LoginView from "./components/login/LoginView"
 import Test from "./pages/Test"
-import axios from "axios"
+import axios from "axios";
+import Cookies from 'js-cookie';
+
 function App() {
  
   const [users, setUsers] = useState([]);
@@ -17,20 +19,18 @@ function App() {
 
   const role= localStorage.getItem('role');
  
-  
+  const myCookieValue = Cookies.get('access_token');
 
   return (
     <DndProvider backend={HTML5Backend}>
        <Router>
       <Routes>
-        <Route path="/home" 
+      <Route path="/home" 
           element={
+            myCookieValue? 
             <Home 
             role={role}
-            />} />
-        <Route path="/records" element={<HomeRecords />} />
-        <Route  path="/" 
-          element={
+            />:
             <LoginView
             users={users}
             setUsers={setUsers}
@@ -40,7 +40,27 @@ function App() {
             setPassword={setPassword}
             // role={role}
             // setRole={setRole}
-            ></LoginView>}></Route>
+            ></LoginView>
+            } />
+        <Route path="/records" element={<HomeRecords />} />
+        <Route  path="/" 
+          element={
+            myCookieValue? 
+            <Home 
+            role={role}
+            />:
+            <LoginView
+            users={users}
+            setUsers={setUsers}
+            email={email}
+            setEmail={setEmail}
+            password={password}
+            setPassword={setPassword}
+            // role={role}
+            // setRole={setRole}
+            ></LoginView>}>
+              
+            </Route>
         <Route  path="/test" element={
          <Test></Test>
         }></Route>
@@ -51,3 +71,5 @@ function App() {
 }
 
 export default App;
+
+
