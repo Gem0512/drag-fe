@@ -20,6 +20,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import EditText from "../text-edit/EditText"
 import TextArea from "../modal/TextArea";
 import CheckBox from "../modal/CheckBox"
+import Cookies from "js-cookie";
 library.add(fas);
 
 const style = {
@@ -38,7 +39,10 @@ function DraggableElement({
   id, 
   type, 
   text, 
+  index,
   position, 
+  board,
+  setBoard,
   handleDrop, 
   isChecked,
   handleCheckboxChange,
@@ -66,17 +70,23 @@ function DraggableElement({
   setValueSample2,
   deleteItem,
   setDeleteState,
-  handleChangeState,
-  idItemsDrop
+  idItemsDrop,
+  selectedItem,
+  setIndexDelete,
+  handleDeleteItem,
+  mergedItems,
+  name,
+  handleData
   }) {
-
-  const [{ isDragging }, drag] = useDrag(() => ({
-    type: type,
-    item: { id: id },
-    collect: (monitor) => ({
-      isDragging: !!monitor.isDragging(),
-    }),
-  }));
+    const [nameItem, setNameItem]= useState(name);
+  
+    const [{ isDragging }, drag] = useDrag({
+      type: 'BOX', // Định nghĩa giá trị cho type tại đây
+      item: { id: id },
+      collect: (monitor) => ({
+        isDragging: monitor.isDragging(),
+      }),
+    });
 
   const [isHovered, setIsHovered] = useState(false);
   const [size, setSize] = useState({ width: 250, height: 35 });
@@ -88,35 +98,7 @@ function DraggableElement({
   const handleMouseLeave = () => {
     setIsHovered(false);
   };
- const handleState =()=>{
-  handleChangeState(id);
-   console.log(id);
-   
- }
-
-
-  const handleDelete = (event) => {
-    // const element = document.querySelector(".item-drag");
-    // element.parentNode.removeChild(element);
-    const button = event.target;
-    const parentElement = button.closest('.item-drag'); // Sử dụng closest để tìm thẻ cha có class là 'test'
-    if (parentElement) {
-      parentElement.remove();
-    }
-    setDeleteItem("");
-    setDeleteItemText("");
-    setDeleteItemLabel("");
-    
-   
-
-  };
-
-const handleEither=(event) => {
-  handleDelete(event);
-  handleState();
-}
-  // console.log()
-  
+ 
 
   const [open, setOpen] = React.useState(false);
   const [type1, setType] = React.useState('');
@@ -135,7 +117,7 @@ const handleEither=(event) => {
   const dropRef = useRef(null);
 
   const [, drop] = useDrop(() => ({
-    accept: type,
+    accept: 'BOX',
     drop: (item, monitor) => {
       const dropOffset = dropRef.current.getBoundingClientRect();
       const dragOffset = monitor.getSourceClientOffset();
@@ -161,6 +143,7 @@ const handleEither=(event) => {
 
 
   const handleNameChange = (event) => {
+    setNameItem(event.target.value);
     // setText(event.target.value);
     setInputValueSave(event.target.value);
   };
@@ -173,32 +156,18 @@ const handleEither=(event) => {
     setEditorText(text);
    
   };
-
-
-
   const [textValue, setTextValue] = useState(text);
   const [textValueDefault, setTextValueDefault] = useState();
-
-
   const [inputValueFromTextArea, setInputValueFromTextArea] = useState('');
   const [valueDefault, setValueFromTextArea] = useState('');
-
   const [hideFieldName, setHideFieldName] = useState(false);
   const [requiredName, setRequiredName] = useState(false);
-
-
   const [textValueCheckBox, setTextValueCheckBox] = useState(text);
   const [inputValueFromCheckBox, setInputValueFromCheckBox] = useState('');
-
-
-  // const [hideFieldNameCheckBox, setHideFieldNameCheckBox] = useState(false);
-
-
-
   const [formValue, setFormValue] = useState(false);
   const [formValue1, setFormValue1] = useState(false);
-
   const [textArea, setTextArea]=  useState();
+
 
   const handleFormChange = (event) => {
     setFormValue(event.target.checked);
@@ -209,8 +178,17 @@ const handleEither=(event) => {
   };
 
   const [ des, setDes]= useState();
+  const [data, setData]= useState(board);
 
-  const handleButtonClick = () => {
+  const access_token = Cookies.get('access_token');
+
+  const myHeaders = new Headers();
+  myHeaders.append('Content-Type', 'application/json');
+  myHeaders.append('Authorization', `Bearer ${access_token}`);
+
+  const handleButtonClick = async () => {
+    handleData();
+    console.log("aa");
     setTextValueCheckBox(inputValueFromCheckBox || text)
     setSample1(valueSample1 || "sample1")
     setSample2(valueSample2 || "sample2")
@@ -224,14 +202,53 @@ const handleEither=(event) => {
     // setInputValueSave(text1 || "Input");
     // setTextAreaValueSave(inputValueFromTextArea || "Text Area" );
     onSave(inputValue1, inputValue2);
-   console.log(text1);
+   
+  
+   const value2= localStorage.getItem("inputValueFromTextArea");
+   const value3= localStorage.getItem("label");
+   const value4= localStorage.getItem("inputValueFromCheckBox");
       
+   const value= value4||value2||value3||inputValueSave;
+   setNameItem(value);
+
+  setValueCard(value);
+  console.log(board, index);
+  console.log(value);
+  console.log(inputValueSave);
+
+  const newData = data.map((item, index1) =>
+  index1 === index ? { ...item, name: value } : item
+  );
+  setData(newData);
+  console.log(idItemsDrop,">>>",index, ">>>>>", data);
+  const idItem =localStorage.getItem('oldData');
+  try {
+    const response = await fetch(`http://localhost:4000/api/v1/forms/${idItem}/items/${index}/addKeyValue`, {
+      method: 'PATCH',
+      headers: myHeaders,
+      body: JSON.stringify({
+        value: value
+      })
+    });
+
+    if (response.ok) {
+      console.log("Add name thành công");
+    } else {
+      console.log("Đã có lỗi khi add name:", response.statusText);
+    }
+  } catch (error) {
+    console.log("Đã có lỗi khi add name:", error);
+  }
+
+  localStorage.setItem("inputValue","");
+  localStorage.setItem("inputValueFromTextArea","");
+  localStorage.setItem("label","");
+  localStorage.setItem("inputValueFromCheckBox","");
+  
   };
 
   
   const [text2, setText2] = useState('');
-
-
   const handleNameChange2 = (event) => {
   
     setText2(event.target.value);
@@ -243,6 +260,11 @@ const handleEither=(event) => {
   //   setIsHovered(false);
   // };
 
+  const [valueCard, setValueCard]= useState();
+  const handleSaveCard =()=>{
+
+    
+  }
 
   const [isChecked1, setIsChecked1] = useState(false);
 
@@ -308,19 +330,22 @@ const handleEither=(event) => {
   const [textAreaValue, setTextAreaValue] = useState('');
 
   useEffect(() => {
+    setTextAreaValueSave(name);
     const value = localStorage.getItem('textarea');
     if (value) {
       setTextAreaValue(value);
       setTextAreaValueSave(value);
     }
+    // handleData();
   }, []);
   // console.log(text);
 
   // console.log(text1, inputValueSave);
-  localStorage.setItem('inputValue', inputValueSave);
+ 
   const inputFinal =localStorage.getItem('inputValue');
 // console.log(inputFinal);
-
+ 
+//  console.log(name);
   return (
     <div className="item-drag" ref={dropRef}
      style={{
@@ -362,12 +387,12 @@ const handleEither=(event) => {
       }}>      
         <p>{buttonClicked && text1 ? (
           <div>
-            {inputFinal ||"Input"}*
+            {nameItem ||"Input"}*
           </div>
         ) : 
         (
           <div>
-            {inputFinal || "Input"}*
+            {nameItem || "Input"}*
           </div>
         )
         }</p>
@@ -383,12 +408,12 @@ const handleEither=(event) => {
         <p>
         {buttonClicked && text1 ? (
           <div>
-            {inputFinal || "Input"}
+            {nameItem || "Input"}
           </div>
         ) : 
         (
           <div>
-            {inputFinal||"Input"}
+            {nameItem||"Input"}
           </div>
         )
         }
@@ -406,7 +431,7 @@ const handleEither=(event) => {
           width:"55%",
 
         }}>      
-          <p>{text|| "Label"}</p>
+          <p>{"Label"}</p>
         </div>
       }
 
@@ -438,7 +463,7 @@ const handleEither=(event) => {
             width:"60%",
           }}>      
             {/* <p>{buttonClicked ? textAreaValueSave : text}*</p> */}
-            <p>{textAreaValueSave  || "Text Area"}</p>
+            <p>{nameItem  || "Text Area"}</p>
           </div>
             ) :
             (
@@ -447,7 +472,7 @@ const handleEither=(event) => {
             width:"60%",
           }}>      
             {/* <p>{buttonClicked ? textAreaValueSave : text}</p> */}
-            <p>{textAreaValueSave || "Text Area"}</p>
+            <p>{nameItem || "Text Area"}</p>
           </div>
         )
       }
@@ -479,7 +504,7 @@ const handleEither=(event) => {
           style={{
             width:"65%",
           }}>      
-            <p>{buttonClicked ? textValueCheckBox : text}*</p>
+            <p>{buttonClicked ? nameItem : text}*</p>
           </div>
             ) :
             (
@@ -487,7 +512,7 @@ const handleEither=(event) => {
           style={{
             width:"65%",
           }}>      
-            <p>{buttonClicked ? textValueCheckBox : text}</p>
+            <p>{buttonClicked ? nameItem : text}</p>
           </div>
         )
       }
@@ -500,7 +525,7 @@ const handleEither=(event) => {
             <div style={{
               width:"55%"
             }}>
-              <p>{text}</p>
+              <p>{nameItem}</p>
             </div>
           )
         }
@@ -510,7 +535,7 @@ const handleEither=(event) => {
             style={{
               width:"55%"
             }}>
-              <p>{text}</p>
+              <p>{nameItem}</p>
             </div>
           )
         }
@@ -520,7 +545,7 @@ const handleEither=(event) => {
             style={{
               width:"55%"
             }}>
-              <p>{text}</p>
+              <p>{nameItem}</p>
             </div>
           )
         }
@@ -530,7 +555,7 @@ const handleEither=(event) => {
             style={{
               width:"55%"
             }}>
-              <p>{text}</p>
+              <p>{nameItem}</p>
             </div>
           )
         }
@@ -540,7 +565,7 @@ const handleEither=(event) => {
             style={{
               width:"55%"
             }}>
-              <p>{text}</p>
+              <p>{nameItem}</p>
             </div>
           )
         }
@@ -550,7 +575,7 @@ const handleEither=(event) => {
             style={{
               width:"55%"
             }}>
-              <p>{text}</p>
+              <p>{nameItem}</p>
             </div>
           )
         }
@@ -560,7 +585,7 @@ const handleEither=(event) => {
             style={{
               width:"55%"
             }}>
-              <p>{text}</p>
+              <p>{nameItem}</p>
             </div>
           )
         }
@@ -570,7 +595,7 @@ const handleEither=(event) => {
             style={{
               width:"55%"
             }}>
-              <p>{text}</p>
+              <p>{nameItem}</p>
             </div>
           )
         }
@@ -580,7 +605,7 @@ const handleEither=(event) => {
             style={{
               width:"55%"
             }}>
-              <p>{text}</p>
+              <p>{nameItem}</p>
             </div>
           )
         }
@@ -645,7 +670,7 @@ const handleEither=(event) => {
            
 
             <button className="option" 
-            onClick={handleEither}
+            onClick={() =>{setIndexDelete(index);handleDeleteItem();}}
             
             >
               <img
@@ -732,7 +757,7 @@ const handleEither=(event) => {
                       fontSize:"18px"
                     }}name="name">Name*</label>
                     <input 
-                    value={inputValueSave}
+                    value={nameItem}
 
                     style={{
                       height:"25px",
@@ -859,6 +884,7 @@ const handleEither=(event) => {
                       handleField={handleField}
                       setTextAreaValueSave={setTextAreaValueSave}
                       editorText={editorText}
+                      nameItem={nameItem}
                       >
                       </TextArea>
                     )
@@ -909,7 +935,7 @@ const handleEither=(event) => {
                       marginLeft:"20px"
                     }}variant="outlined">Cancel</Button>
                     <Button 
-                    onClick={handleButtonClick}
+                    onClick={()=>{handleButtonClick(); handleSaveCard();  handleData();}}
                     style={{
                       padding:"5 40px"
                     }}variant="contained">Save</Button>
@@ -949,7 +975,7 @@ const handleEither=(event) => {
           
            type="text" readOnly />
         )}
-        {(type === "label"|| type=== '3' ) && <p>{des}</p>}
+        {(type === "label"|| type=== '3' ) && <p>{name}</p>}
         {(type === "textarea" || type=== '4' )&& 
             <textarea name="comments" cols="20" rows="4"
             style={{

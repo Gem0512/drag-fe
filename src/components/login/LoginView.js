@@ -4,6 +4,9 @@ import axios from 'axios';
 import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import { OutlinedInput, Box, Typography,Button } from '@mui/material';
+import 'react-toastify/dist/ReactToastify.css';
+import Cookies from 'js-cookie';
+import { useNavigate } from 'react-router-dom'; 
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -18,56 +21,33 @@ const LoginView = ({
   setRole,
 }) => {
   // console.log(email);
-  const [toastState, setToastState]= useState();
-  // const [isLogin, setIsLogin]= useState(false);
+  const notify = () => toast("Đăng ký thành công!");
+
+  const navigate = useNavigate();
+
   const handleLogin = async (event) => {
-    localStorage.setItem("isLogin", false);
+    
     event.preventDefault(); // Ngăn chặn sự kiện submit mặc định của form
       
-      console.log(email, password)
-      axios.post('http://localhost:4000/api/login', { email: email, password: password})
+      
+      axios.post('http://localhost:4000/api/v1/auth/login', { username: email, password: password})
       .then((response) => {
-        setRegister(true); // In thông tin về box đã được lưu vào MongoDB
-        window.location.href = '/home';
-        localStorage.setItem("isLogin", true);
-        console.log(">>>>",email, password)
-        setToastState(true)
-        console.log(toastState)
+        console.log(response.data.data.user);
+        Cookies.set('access_token', response.data.data.access_token, { expires: 7 }); // Ví dụ: hết hạn sau 7 ngày
+        Cookies.set('refresh_token', response.data.data.refresh_token, { expires: 14 });
+        Cookies.set('user', JSON.stringify(response.data.data.user), { expires: 14 }); 
+        // window.location.href = '/home';
+        navigate('/home');
       })
       .catch((error) => {
-        setToastState(false)
+       
         console.error("Xảy ra lỗi khi đăng nhập", error);
-        localStorage.setItem("isLogin", false);
+      
       });
       console.log(email)
-
-
-      axios.post('http://localhost:4000/api/create-email', { email: email })
-      .then((response) => {
-        setRegister(true); // In thông tin về box đã được lưu vào MongoDB
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-
   };
 
   if(localStorage.getItem("isLogin")==="true")   window.location.href = '/home';
-
-
-
-  // useEffect(() => {
-  //   // Gửi yêu cầu GET đến API endpoint /users khi component được render
-  //   axios.get('http://localhost:4000/users') // Cần chỉnh sửa URL nếu backend chạy ở cổng khác
-  //     .then(response => {
-  //       // Cập nhật state users với dữ liệu nhận được từ server
-  //       setUsers(response.data);
-  //     })
-  //     .catch(error => {
-  //       console.error('Lỗi khi lấy danh sách người dùng:', error);
-  //     });
-  // }, []);
-
 
   const [showPassword, setShowPassword] = useState(true);
 
@@ -124,16 +104,36 @@ const LoginView = ({
   }
   // console.log(emailValue, passWordValue, userNameValue);
  const [register,setRegister]= useState(false);
+ const access_token = Cookies.get('access_token');
 
-  const handleRegister=()=>{
+ const myHeaders = new Headers();
+ myHeaders.append('Content-Type', 'application/json');
+ myHeaders.append('Authorization', `Bearer ${access_token}`);
+
+  const handleRegister= async()=>{
     if(emailValue && passWordValue && userNameValue){
-      axios.post('http://localhost:4000/api/create-users', { email: emailValue, password: passWordValue, title: userNameValue })
-      .then((response) => {
-        setRegister(true); // In thông tin về box đã được lưu vào MongoDB
-      })
-      .catch((error) => {
-        console.error(error);
-      });
+      try {
+        const response = await fetch(`http://localhost:4000/api/v1/auth/register`, {
+          method: 'POST',
+          headers: myHeaders,
+          body: JSON.stringify({
+            email: emailValue,
+            password:passWordValue,
+            title: userNameValue
+          })
+        });
+    
+        if (response.ok) {
+          console.log("Đăng ký thành công ");
+          notify();
+          // setLogin(true);
+
+        } else {
+          console.log("Đã có lỗi khi đăng kí:", response.statusText);
+        }
+      } catch (error) {
+        console.log("Đã có lỗi khi đăng ký:", error);
+      }
     }
     else {
       setRegister(false); 
@@ -143,20 +143,6 @@ const LoginView = ({
   
   localStorage.setItem('email', email);
   localStorage.setItem('password', password);
-
-  const notify = () => {
-    toast("Đăng nhập thành công!");
-  }
-  const notify1 = () => {
-    toast("Đăng nhập thất bại!");
-  }
-  const notify2 = () => {
-    toast("Đăng kí thành công!");
-  }
-
-  const notify3 = () => {
-    toast("Đăng kí thất bại!");
-  }
   return (
     <div className="css-fix">
         {
@@ -174,7 +160,7 @@ const LoginView = ({
           }}
             type="email"
             id="email"
-            value={email}
+            
             onChange={e => setEmail(e.target.value)}
             required
           />
@@ -193,7 +179,7 @@ const LoginView = ({
               <OutlinedInput
               type={showPassword ? 'text' : 'password'}
               id="password"
-              value={password}
+              
               onChange={e => setPassword(e.target.value)}
               required
               sx={{
@@ -236,11 +222,7 @@ const LoginView = ({
           marginTop:"30px"
         }}
         className="blogin" type="submit"
-        onClick={ toastState?(
-          notify
-        ):(
-          notify1
-        )}
+     
         >Login</button>
         {/* <ToastContainer /> */}
         <Box 
@@ -264,7 +246,7 @@ const LoginView = ({
               <div>
               <div className="login-form">
       <h2>Register</h2>
-      <ToastContainer />
+
       <form >
         <div className="form-group">
           <label htmlFor="email">Email</label>
@@ -359,15 +341,11 @@ const LoginView = ({
         }}
         onClick={() =>{
           handleRegister();
-          emailValue && passWordValue && userNameValue ?(
-            notify2()
-            ):(
-              notify3()
-            )
 
            }}
         
         className="blogin" >Register</Button>
+        <ToastContainer />
 
         <Box 
          style={{

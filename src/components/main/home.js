@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useLayoutEffect } from "react";
 import PrimarySearchAppBar from "../header/index"
 import "../css/home.css";
 import Name from "../app-name/index"
@@ -22,16 +22,18 @@ import UserPage from "../../pages/UserPage"
 import AdminPage from "../../pages/AdminPage"
 import axios from 'axios';
 import Resize from "../resize/Resize"
+import Cookies from 'js-cookie';
+
 
 async function fetchData(itemId) {
-  try {
-    const response = await fetch(`http://localhost:4000/api/getItemById/${itemId}`);
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error('Error fetching data:', error);
-    return null;
-  }
+  // try {
+  //   const response = await fetch(`http://localhost:4000/api/getItemById/${itemId}`);
+  //   const data = await response.json();
+  //   return data;
+  // } catch (error) {
+  //   console.error('Error fetching data:', error);
+  //   return null;
+  // }
   
 }
 
@@ -99,7 +101,6 @@ function a11yProps(index) {
     'aria-controls': `simple-tabpanel-${index}`,
   };
 }
-
 
 
 
@@ -180,58 +181,47 @@ export default function Home(
       
     }));
     if( board.length>0) localStorage.setItem("board", JSON.stringify(board));
-    // console.log(board)
-    //   setBoard(storedObject);
-    // console.log(board);
-    // const [storedObject,setStoredObject] = useState([]);
-    
 
-    // const handleClickSave =()=>{
-     const storedObject= [...(JSON.parse(localStorage.getItem('board')))];
+      const [oldData, setOldData]= useState();
    
-    
-  
-    // const addElementToBoard = (id) => {
-    //   const elementList = ElementList.filter((element) => id === element.id);
-    //   setBoard((board) => [...board, elementList[0]]);
-    // };
-   
+     const storedObject= [...(JSON.parse(localStorage.getItem('board')|| '[]'))];
+  let count=1;
     const addElementToBoard = (item, monitor) => {
+      
       const elementList = ElementList.filter((element) => item.id === element.id);
       const newItem = {
         ...elementList[0],
+        number: count++,
         position: monitor.getClientOffset(),
       };
+      
+     
       setBoard((board) => [...board, newItem]);
+     
       setDroppedItems((prevItems) => [...prevItems, item.id]);
+      handleLoadData();
       
     };
+   
 
     
 
     const [droppedItems, setDroppedItems] = useState([]);
-    // console.log(droppedItems);
-
+   
     const jsonState = JSON.stringify(droppedItems);
-    // console.log(jsonState);
+   
 // Lưu mảng state vào localStorage
     localStorage.setItem("dropItem", jsonState);
     
-  
-    const handleDrop = (id, rowIndex, colIndex) => {
-      const updatedBoard = board.map((element) => {
-        if (element.id === id) {
-          return {
-            ...element,
-            position: { rowIndex, colIndex },
-          };
-        }
-        return element;
-      });
-      setBoard(updatedBoard);
-    console.log(board)
-    };
    
+   
+    const handleDrop = (id, rowIndex, colIndex) => {
+ 
+    };
+
+
+
+
 
     const showToastMessage = () => {
         toast.success('Form saved !', {
@@ -242,40 +232,50 @@ export default function Home(
         }
         );
     };
+    
+    const handleLoadData = async() =>{
+      try {
+        const response = await fetch(`http://localhost:4000/api/v1/forms/items/${idItemsDrop}`, {
+          method: 'POST',
+          headers: myHeaders,
+          body: JSON.stringify({
+            items: mergedItems,
+          })
+        });
+    
+        if (response.ok) {
+          console.log("Thêm items thành công");
+        } else {
+          console.log("Đã có lỗi khi thêm items:", response.statusText);
+        }
+      } catch (error) {
+        console.log("Đã có lỗi khi thêm items:", error);
+      }
+      handleData();
+      fetchItems();
+    }
 
+
+
+    const handleClick1 = async() => {
+      
+      
   
-
-
-
-    const handleClick1 = () => {
-      const value1= localStorage.getItem("inputValue");
-    const value2= localStorage.getItem("inputValueFromTextArea");
-    const value3= localStorage.getItem("label");
-    const value4= localStorage.getItem("inputValueFromCheckBox");
-      fetchItems1();
         const now = new Date();
         setCurrentTime(now.toLocaleTimeString());
         showToastMessage();
+        
         handleAddItemDropItemDrop();
 
-        console.log(idItemsDrop, ">>>",value1, value2, value3, value4);
-
-        
-          // Gửi các giá trị đã chọn lên backend
-          axios.post('http://localhost:4000/api/saveTitle', { itemId: idItemsDrop,input: value1,text: value2, label: value3, checkBox: value4  })
-            .then(response => {
-              console.log(response.data);
-            })
-            .catch(error => {
-              console.error(error);
-            });
-        
-    
+        handleLoadData();
+        handleData();
+        fetchItems();
+      
         // window.location.reload();
-      localStorage.setItem("inputValue", "");
-    localStorage.setItem("inputValueFromTextArea", "");
-     localStorage.setItem("label", "");
-    localStorage.setItem("inputValueFromCheckBox", "");
+    //   localStorage.setItem("inputValue", "");
+    // localStorage.setItem("inputValueFromTextArea", "");
+    //  localStorage.setItem("label", "");
+    // localStorage.setItem("inputValueFromCheckBox", "");
         
       };
 
@@ -297,8 +297,7 @@ export default function Home(
       };
 
       localStorage.setItem('isChecked', isChecked);
-      // console.log(localStorage.getItem('isChecked'));
-    
+   
            
   
       const [checkboxes2, setCheckboxes2] = useState([]);
@@ -554,133 +553,124 @@ export default function Home(
       const [sample2, setSample2] = useState(valueSample2);
 
       const [apps, setApps]= useState([]);
-
+      const access_token = Cookies.get('access_token');
+     
+      const [idUser, setIdUser]= useState();
 
       useEffect(() => {
         fetchItems1();
-      }, []);
-    
-      const fetchItems1 = async ()=> {
         
-          // Gửi yêu cầu GET đến API endpoint /users khi component được render
-          axios.get('http://localhost:4000/list-app') // Cần chỉnh sửa URL nếu backend chạy ở cổng khác
-            .then(response => {
-              // Cập nhật state users với dữ liệu nhận được từ server
-              setApps(response.data);
-             
-            })
-            .catch(error => {
-              console.error('Lỗi khi lấy danh sách người dùng:', error);
-            });
-       
+      }, []);
+
+
+      const myHeaders = new Headers();
+      myHeaders.append('Content-Type', 'application/json');
+      myHeaders.append('Authorization', `Bearer ${access_token}`);
+  
+      
+      const fetchItems1 = async ()=> {
+        // try{
+        //   const response = await fetch('http://localhost:4000/api/v1/forms/getForm', {
+        //     method: 'GET',
+        //     headers: myHeaders,
+        //     })
+        //     const responseData = await response.json();
+        //     setTest(responseData);
+        //  }
+        //  catch (error){
+        //   console.error('Lỗi khi lấy danh sách người dùng:', error);
+        //  }
       }
-      // useEffect(() => {
-      //   // Gửi yêu cầu GET đến API endpoint /users khi component được render
-      //   axios.get('http://localhost:4000/list-app') // Cần chỉnh sửa URL nếu backend chạy ở cổng khác
-      //     .then(response => {
-      //       // Cập nhật state users với dữ liệu nhận được từ server
-      //       setApps(response.data);
-           
-      //     })
-      //     .catch(error => {
-      //       console.error('Lỗi khi lấy danh sách người dùng:', error);
-      //     });
-      // }, []);
+      
+      const [forms, setForms]= useState();
+      const [formsNoUser, setFormsNoUser]= useState();
+      const fetchItems = async ()=> {
+        try{
+          // eslint-disable-next-line no-template-curly-in-string
+        
+          const response = await fetch(`http://localhost:4000/api/v1/forms/byUser/${idUser}`, {
+            method: 'GET',
+            headers: myHeaders,
+            })
+            const responseData = await response.json();
+            
+            setForms(responseData.data);
+        
+         }
+         catch (error){
+          console.error('Lỗi khi lấy danh sách form ủy quyền:', error);
+         }
+      }
+
+      const fetchItems2 = async ()=> {
+        try{
+     
+          const response = await fetch(`http://localhost:4000/api/v1/forms/getItemsByUserId/${idUser}`, {
+            method: 'GET',
+            headers: myHeaders,
+            })
+            const responseData = await response.json();
+            
+            setFormsNoUser(responseData.data);
+         
+         }
+         catch (error){
+          console.error('Lỗi khi lấy danh sách form ủy quyền:', error);
+         }
+      }
+      useEffect(() => {
+        setIdUser(JSON.parse(Cookies.get('user'))._id)  
+        // fetchItems(); 
+        fetchItems2();
+      }, [idUser]);
+
+     
+
+      
 
 
 
       const [items, setItems]= useState([]);
 
-      useEffect(() => {
-        // Gửi yêu cầu GET đến API endpoint /users khi component được render
-        axios.get('http://localhost:4000/list-item') // Cần chỉnh sửa URL nếu backend chạy ở cổng khác
-          .then(response => {
-            // Cập nhật state users với dữ liệu nhận được từ server
-            setItems(response.data);
-          })
-          .catch(error => {
-            console.error('Lỗi khi lấy danh sách người dùng:', error);
-          });
-      }, []);
-
-
-     
 
       const [idItemsDrop, setIdItemsDrop]=useState();
-      // console.log(idItemsDrop, "---", droppedItems);
+   
 
 
-      const handleAddItemDropItemDrop = () => {
-        if (idItemsDrop) {
-          // Gửi các giá trị đã chọn lên backend
-          axios.post('http://localhost:4000/api/saveItemDrop', { itemId: idItemsDrop, items: droppedItems })
-            .then(response => {
-              console.log(response.data);
-            })
-            .catch(error => {
-              console.error(error);
-            });
-    
-            // setOpen2(false);
-        }
-       
+      const handleAddItemDropItemDrop = () => {  
       };
 
       const [idItemUser, setIdItemUser]= useState();
-
-      // console.log(idItemUser);
-
 
       const [appDelete, setAppDelete]= useState();
 
   
 
       const handleDeleteApp = (itemId) => {
-      
-        axios.delete(`http://localhost:4000/api/delete-app/${itemId}`)
-          .then(response => {
-            console.log(response.data.message); // Hiển thị thông báo từ backend
-            // Cập nhật state items để loại bỏ item đã bị xóa
-            // setRows(prevItems => prevItems.filter(item => item._id !== itemId));
-          })
-          .catch(error => console.error('Error deleting item:', error));
-        console.log(itemId);
-        fetchItems1();
-      
+
+        try{
+          fetch(`http://localhost:4000/api/v1/forms/delete/${itemId}`, {
+            method: 'DELETE',
+            headers: myHeaders,
+            })
+         }
+         catch (error){
+          console.log("Đã có lỗi khi delete form:", error)
+         }
+    
+        fetchItems();
+   
       };
-
-    //   const storedUser = localStorage.getItem('email');
-    //   const appAuthors = apps.filter((app) => app?.author?.includes(storedUser)?? false);
-    //  const [listAppAuthor, setListAppAuthor]=useState(appAuthors);
-    //  console.log(listAppAuthor,"---", appAuthors)
-
-
-    // const handleUpdateApp=()=>{
-    //    appAuthors = apps.filter((app) => app?.author?.includes(storedUser)?? false);
-    //   setListAppAuthor(...appAuthors);
-
-    // }
 
     const storedUser = localStorage.getItem('email');
   const appAuthors = apps.filter((app) => app?.author?.includes(storedUser)?? false);
-    // console.log(storedUser,"---",appAuthors, );
-
-
+   
     // Delete State
 
     const [deleteState, setDeleteState]= useState('');
     const [clickedIndexes, setClickedIndexes] = useState([]);
 
-    const handleChangeState =(idState)=>{
-      setDeleteState(idState);
-      setClickedIndexes((prevIndexes) =>
-      prevIndexes.includes(idState)
-        ? prevIndexes.filter((item) => item !== idState)
-        : [...prevIndexes, idState]
-    );
-    }
 
-    // console.log(clickedIndexes);
     const [nameApp, setNameApp]= useState('');
 
 
@@ -691,11 +681,91 @@ export default function Home(
         .then(data => setItem(data));
         
     }, [idItemsDrop]);
+
+
+
+   
   
     const idItemSave =item?.items;
     if(idItemSave)localStorage.setItem("listItemOld", JSON.stringify(idItemSave||[]));
-  
+    const [idRename, setIdRename]= useState();
    
+
+    const idOleData= (localStorage.getItem('oldData'));  
+    const handleData = async()=>{
+      try{
+        const response = await fetch(`http://localhost:4000/api/v1/forms/getFormById/${idOleData}`, {
+          method: 'GET',
+          headers: myHeaders,
+          })
+          const responseData = await response.json();
+         
+        
+          setOldData(responseData.data);
+          
+       }
+       catch (error){
+        console.error('Lỗi khi lấy danh sách form ủy quyền:', error);
+       }
+    }
+    useEffect(()=> {  
+      
+      
+      // handleData();
+      }, [idItemsDrop])
+
+   
+
+  //  const mergedItems=[...oldData?.items,...board];
+
+  let itemsToMerge = [];
+
+
+
+  if (Array.isArray(oldData?.items)) {
+    itemsToMerge = oldData.items;
+   
+  } else if (oldData?.items) {
+    console.error("oldData.items is not an array.");
+  }
+
+  if (Array.isArray(board)) {
+    itemsToMerge = [...itemsToMerge, ...board];
+  } else {
+    console.error("board is not an array.");
+  }
+
+
+  // Sử dụng mảng đã kiểm tra để tạo mergedItems
+  const mergedItems = itemsToMerge;
+
+  console.log(mergedItems);
+   const [indexDelete, setIndexDelete] = useState()
+
+  const handleDeleteItem =() =>{
+    try{
+      fetch(`http://localhost:4000/api/v1/forms/${idItemsDrop}/items/${indexDelete}`, {
+        method: 'DELETE',
+        headers: myHeaders,
+        })
+     }
+     catch (error){
+      console.log("Đã có lỗi khi delete form:", error)
+     }
+     console.log(idItemsDrop);
+     console.log(".>>>>")
+  }
+  useEffect(() =>{
+    if(idItemsDrop){
+      localStorage.setItem("oldData", idItemsDrop)
+    }
+  })
+  useLayoutEffect(()=>{
+    handleData();
+    fetchItems();
+  })
+  
+  
   return (
 
     <div className="home-all">
@@ -735,7 +805,7 @@ export default function Home(
           backgroundColor: value === 'two' ? 'rgba(0, 0, 0, 0.2)' : 'transparent',
         }}
          onClick={()=> {
-        window.location.reload();
+        // window.location.reload();
        }}
         label="Views data" {...a11yProps(1)} />
           <Tab sx={{
@@ -751,7 +821,7 @@ export default function Home(
           backgroundColor: value === 'three' ? 'rgba(0, 0, 0, 0.2)' : 'transparent',
         }}
          onClick={()=> {
-        window.location.reload();
+        // window.location.reload();
        }}
          label="App" {...a11yProps(3)} />
         </Tabs>
@@ -794,12 +864,18 @@ export default function Home(
             deleteItem={deleteItem}
             setDeleteState={setDeleteState}
             deleteState={deleteState}
-            handleChangeState={handleChangeState}
             clickedIndexes={clickedIndexes}
             idItemsDrop={idItemsDrop}
             setBoard={setBoard}
             storedObject={storedObject}
+            selectedItem={selectedItem}
             item={item}
+            // itemsWithId={itemsWithId}
+            mergedItems={mergedItems}
+            setIndexDelete={setIndexDelete}
+            handleDeleteItem={handleDeleteItem}
+            oldData={oldData}
+            handleData={handleData}
           ></FormPage>
       </CustomTabPanel>
       
@@ -863,6 +939,7 @@ export default function Home(
         backgroundColor: "white",
         boxShadow: "5px 5px 6px rgba(0, 0, 0, 0.4)",
         display:"flex",
+        padding:"20px 0"
       }}
       value={value} 
       index={3}>
@@ -870,6 +947,8 @@ export default function Home(
       {/* {
         role==='admin'? ( */}
           <AdminPage
+          forms={forms}
+          formsNoUser={formsNoUser}
           apps={apps}
           idItemsDrop={idItemsDrop}
           setIdItemsDrop={setIdItemsDrop}
@@ -890,6 +969,13 @@ export default function Home(
           renderButton2={renderButton2}
           setSelectedItem={setSelectedItem}
           selectedItem={selectedItem}
+          fetchItems={fetchItems}
+          idRename= {idRename}
+          setIdRename={setIdRename}
+          setOldData={setOldData}
+          mergedItems={mergedItems}
+          handleData={handleData}
+          setBoard={setBoard}
           sx={{
             width:"100%",
             
@@ -897,6 +983,7 @@ export default function Home(
         {/* ):
         ( */}
           <UserPage
+          formsNoUser={formsNoUser}
         inputValueSave={inputValueSave}
         textAreaValueSave={textAreaValueSave}
         apps={apps}

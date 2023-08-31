@@ -1,4 +1,4 @@
-import  React, {useState,useEffect} from 'react';
+import  React, {useState,useEffect, useFocus, useRef} from 'react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
@@ -17,6 +17,8 @@ import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
+import Cookies from 'js-cookie';
+import DriveFileRenameOutlineIcon from '@mui/icons-material/DriveFileRenameOutline';
 
 const style = {
   position: 'absolute',
@@ -32,7 +34,9 @@ const style = {
 };
 
 export default function AdminPage({
+  forms,
   apps, 
+  formsNoUser,
   setIdItemsDrop, 
   handleChangePage, 
   idItemsDrop,
@@ -50,7 +54,14 @@ export default function AdminPage({
     renderButton,
     renderButton2,
     setSelectedItem,
-    selectedItem
+    selectedItem,
+    fetchItems,
+    idRename, 
+    setIdRename,
+    setOldData,
+    mergedItems,
+    handleData,
+    setBoard
     // handleUpdateApp
 }) {
   const [open, setOpen] = React.useState(false);
@@ -58,9 +69,16 @@ export default function AdminPage({
   const handleClose = () => setOpen(false);
 
   const handleGoToPage1 = () => {
+    console.log(mergedItems);
     localStorage.setItem("board", JSON.stringify(''));
     handleChangePage(null, 0);
+    setBoard([]);
+    handleData();
+    // window.location.reload();
   };
+
+
+  
   const handleGoToPageApp = () => {
     handleChangePage(null, 3);
   };
@@ -81,46 +99,53 @@ export default function AdminPage({
    
       // setListAppAuthor(appAuthorsNew);
   
-    const handleUpdateApp=(item)=>{
+    const handleUpdateApp=(item, index)=>{
       const updatedItems = appAuthors.filter((i) => i !== item);
-      window.location.reload();
+   
       setListAppAuthor(updatedItems);
       console.log(listAppAuthor)
       // fetchItems1();
       
       // handleGoToPageApp();
+      fetchItems();
+      // handleClose1(item);
+      const newMenuOpenStates = [...menuOpenStates];
+    newMenuOpenStates[index] = !newMenuOpenStates[index];
+    setMenuOpenStates(newMenuOpenStates);
+  
+   
     }
 
+    const access_token = Cookies.get('access_token');
 
+    const myHeaders = new Headers();
+    myHeaders.append('Content-Type', 'application/json');
+    myHeaders.append('Authorization', `Bearer ${access_token}`);
 
   const handleButtonClick = () => {
-
-    axios.post('http://localhost:4000/api/create-box', { name: inputValue, author: storedUser })
-        .then((response) => {
-          console.log(response.data); // In thông tin về box đã được lưu vào MongoDB
+    try{
+      fetch('http://localhost:4000/api/v1/forms/createForm', {
+        method: 'POST',
+        headers: myHeaders,
+        body: JSON.stringify({
+          name: inputValue,
         })
-        .catch((error) => {
-          console.error(error);
-        });
-      setInputValue('');
-      const newData = {
-        name: inputValue,
-        author: storedUser
-        // Các trường dữ liệu khác tùy ý
-      };
-      fetchItems1();
-      setListAppAuthor([...appAuthors, newData]);
-    
-   
-      // Kiểm tra nếu box có cùng tên đã tồn tại trong danh sách
-    
-      setBoxes([...apps, newData]);
-   
-      setInputValue('');
-      console.log(boxes);
+        })
+     }
+     catch (error){
+      console.log("Đã có lỗi khi create form:", error)
+     }
+  
+    // axios.post('http://localhost:4000/api/v1/forms/createForm', { name: inputValue})
+    //     .then((response) => {
+    //       console.log(response.data); // In thông tin về box đã được lưu vào MongoDB
+    //     })
+    //     .catch((error) => {
+    //       console.error(error);
+    //     });
+    fetchItems();
       handleClose();
-      window.location.reload();
-
+        handleData();
     
   };
 
@@ -138,6 +163,8 @@ export default function AdminPage({
   
     // Đặt anchorEl cho menu hiện tại
     setAnchorEl(event.currentTarget);
+    fetchItems();
+    handleData();
   };
 
   
@@ -156,15 +183,24 @@ export default function AdminPage({
 
 
   useEffect(() => {
-    // Gửi yêu cầu GET đến API endpoint /users khi component được render
-    axios.get('http://localhost:4000/users') // Cần chỉnh sửa URL nếu backend chạy ở cổng khác
-      .then(response => {
-        // Cập nhật state users với dữ liệu nhận được từ server
-        setUsers(response.data);
-      })
-      .catch(error => {
-        console.error('Lỗi khi lấy danh sách người dùng:', error);
-      });
+    const fetchItems2 = async ()=> {
+      try{
+        const response = await fetch(`http://localhost:4000/api/v1/users?current=${1}&pageSize=${100}`, {
+          method: 'GET',
+          headers: myHeaders,
+          })
+          const responseData = await response.json();
+          
+          setUsers(responseData.data.result);
+     
+       }
+       catch (error){
+        console.error('Lỗi khi lấy danh sách form ủy quyền:', error);
+       }
+    }
+    fetchItems2();
+   
+    
   }, []);
 
  
@@ -188,24 +224,75 @@ export default function AdminPage({
     setSelectedOptions(value);
   };
 
-  const handleAddOption = () => {
+  // console.log(selectedOptions, selectedItem);
+  // const handleAddOption = async () => {
+  //   if (selectedItem) {
+  //     // const dataArray = data.map(item => item);
+
+  //     try{
+  //       await fetch(`http://localhost:4000/api/v1/forms/options/${selectedItem}`, {
+  //         method: 'POST',
+  //         headers: myHeaders,
+  //         body: {
+  //           options: selectedOptions.map(option => option.title) 
+  //         }
+  //         })
+  //      }
+  //      catch (error){
+  //       console.log("Đã có lỗi khi add options::", error)
+  //      }
+
+  //      console.log(selectedOptions.map(option => option.title) )
+  //       setOpen2(false);
+  //   }
+  // };
+  const handleAddOption = async () => {
     if (selectedItem) {
-      // Gửi các giá trị đã chọn lên backend
-      axios.post('http://localhost:4000/api/saveData', { itemId: selectedItem, options: selectedOptions.map(option => option.title) })
-        .then(response => {
-          console.log(response.data);
-        })
-        .catch(error => {
-          console.error(error);
+      try {
+        const response = await fetch(`http://localhost:4000/api/v1/forms/options/${selectedItem}`, {
+          method: 'POST',
+          headers: myHeaders,
+          body: JSON.stringify({
+            options: selectedOptions.map(option => option._id)
+          })
         });
-
-        setOpen2(false);
+  
+        if (response.ok) {
+          console.log("Thêm options thành công");
+        } else {
+          console.log("Đã có lỗi khi thêm options:", response.statusText);
+        }
+      } catch (error) {
+        console.log("Đã có lỗi khi thêm options:", error);
+      }
+  
+      console.log(selectedOptions.map(option => option.title));
+      setOpen2(false);
     }
-
-    window.location.reload();
-    
+    fetchItems();
+    handleData();
   };
+  
 
+
+    // try{
+      //   const response = await fetch(`http://localhost:4000/api/v1/forms/options/${selectedItem}`, {
+      //     method: 'POST',
+      //     headers: myHeaders,
+      //     body: {
+      //       'options': selectedOptions.map(option => option.title) 
+      //     }
+      //     })
+      //     const responseData = await response.json();
+          
+      //     setUsers(responseData);
+      //     console.log(responseData.data);
+      //  }
+      //  catch (error){
+      //   console.error('Lỗi khi add options:', error);
+      //  }
+
+// console.log(selectedOptions.map(option => option.title))
   
 
   const foundItem = apps.find(app => app._id === idItemsDrop);
@@ -213,6 +300,28 @@ export default function AdminPage({
 
 
   const [adminNewApp, setAdminNewApp]= useState(); 
+  const [dataRecord, setDataRecord]= useState([]);
+
+  const handleRecord=async (id)=>{
+    try{
+            const response = await fetch(`http://localhost:4000/api/v1/forms/getFormById/${id}`, {
+              method: 'GET',
+              headers: myHeaders,
+              })
+              const responseData = await response.json();
+              setDataRecord(responseData.data?.items);
+            
+              console.log(responseData.data?.items);
+              console.log("yes")
+           }
+           catch (error){
+            console.error('Lỗi khi lấy danh sách form ủy quyền:', error);
+           }
+           fetchItems();
+           handleData();
+  }
+
+  console.log(dataRecord)
 
   const foundNewApp = apps.find(app => app._id === adminNewApp);
 
@@ -224,9 +333,7 @@ const inputValueFromCheckBox= localStorage.getItem("inputValueFromCheckBox");
 // console.log(inputFinal)
 
 const [isPicked, setIsPicked] = useState(false); 
-console.log(isPicked);
   const [isPicked1, setIsPicked1] = useState(false); 
-  console.log(isPicked1);
 const [sample1, setSample1]=  useState();
 
 const [sample2, setSample2]=  useState();
@@ -249,31 +356,51 @@ const handleCheckboxPicked1 = (event) => {
 
   const label = localStorage.getItem("label");
   const textAreaLocal = localStorage.getItem("inputValueFromTextArea");
-  console.log(label);
+  // console.log(label);
 
     const [input, setInput]= useState('');
     const [textArea, setTextArea]= useState('');
     const [dataList, setDataList] = useState([]);
 
 
-    const handleSubmit = async (event) => {
-      setOpen(false);
-      axios.post('http://localhost:4000/api/create-item', { name: input, description: textArea, sample1: sample1, sample2: sample2, label: label, inside: adminNewApp  })
-      .then((response) => {
-        console.log(response.data); // In thông tin về box đã được lưu vào MongoDB
-        fetchItems1();
-      })
-      .catch((error) => {
-        console.error(error);
-      });
   
- 
-    
-    console.log( sample1,"/",sample2,"/",label );
-    handleCloseNew();
 
-       
-      };
+    
+      const [openModalRename, setOpenModalRename] = React.useState(false);
+      const handleOpenRename = () => 
+      {
+        setOpenModalRename(true);
+        fetchItems();
+        handleData();
+      }
+      const handleCloseRename = () => setOpenModalRename(false);
+      const [newNameForm, setNewNameForm]=  useState();
+      const inputReference = useRef(null);
+
+
+      
+      const handleSaveRename = async() =>{
+        try {
+          const response = await fetch(`http://localhost:4000/api/v1/forms/update/${idRename}`, {
+            method: 'PATCH',
+            headers: myHeaders,
+            body: JSON.stringify({
+              name: newNameForm
+            })
+          });
+    
+          if (response.ok) {
+            console.log("Rename thành công");
+          } else {
+            console.log("Đã có lỗi khi rename:", response.statusText);
+          }
+        } catch (error) {
+          console.log("Đã có lỗi khi rename:", error);
+        }
+        fetchItems();
+        handleData();
+        handleCloseRename();
+      }
 
 
   // console.log(apps, foundItem.items);
@@ -292,7 +419,43 @@ const handleCheckboxPicked1 = (event) => {
 
   const inputFinal = localStorage.getItem('inputValue');
   const isCheckedLocal= (localStorage.getItem('isChecked'));
-  
+
+  const [inputValues, setInputValues] = useState({}); // Mảng lưu giá trị của từng input
+
+  const handleInputChangeResult = (index, value) => {
+    setInputValues((prevValues) => ({
+      ...prevValues,
+      [index]:value, // Lưu giá trị của input theo chỉ số index
+    }));
+    fetchItems();
+    handleData();
+  };
+  console.log(inputValues)
+
+
+  const handleSubmit = async (event) => {
+    setOpen(false);
+  try {
+    const response = await fetch(`http://localhost:4000/api/v1/results/createResult`, {
+      method: 'POST',
+      headers: myHeaders,
+      body: JSON.stringify({
+        inputValues
+      })
+    });
+
+    if (response.ok) {
+      console.log("Thêm items thành công");
+    } else {
+      console.log("Đã có lỗi khi thêm items:", response.statusText);
+    }
+  } catch (error) {
+    console.log("Đã có lỗi khi thêm items:", error);
+  }
+  fetchItems();
+  handleData();
+  handleCloseNew();
+    };
 
 
   return (
@@ -334,7 +497,7 @@ const handleCheckboxPicked1 = (event) => {
            <h4>APP NAME</h4>
            <OutlinedInput
             onChange={handleInputChange}
-            value={inputValue}
+            // value={inputValue}
             type="text"
            sx={{
             marginTop:"10px",
@@ -391,7 +554,7 @@ const handleCheckboxPicked1 = (event) => {
         marginLeft:"-20px",
         borderRadius:"10px",
         marginTop:"20px",
-        width:"100%"
+        width:"97%"
       }}>
       <div style={{
         display:"block",
@@ -415,7 +578,7 @@ const handleCheckboxPicked1 = (event) => {
      } */}
      
       {
-        appAuthors.length> 0 ? (appAuthors.map((app, index) => (
+        forms?.length> 0 ? (forms.map((app, index) => (
           <div key={app._id}>
             
               <Button
@@ -457,21 +620,32 @@ const handleCheckboxPicked1 = (event) => {
                 marginTop:"-5px"
               }}></PersonAddAltIcon>
               Add user</MenuItem>
-              <MenuItem onClick={()=> {setNameApp(app.name);setIdItemsDrop(app._id); handleGoToPage1()} }>
+
+              <MenuItem onClick={()=> {setNameApp(app.name);setIdItemsDrop(app._id); handleGoToPage1(); handleData();} }>
               <EditNoteIcon
               sx={{
                 marginRight:"5px",
                 marginTop:"-5px"
               }}></EditNoteIcon>
               Edit</MenuItem>
-              <MenuItem onClick={()  => {handleOpenNew(); setAdminNewApp(app._id);}}>
+
+              <MenuItem onClick={()  => {handleOpenRename();setIdRename(app._id);}}>
+              <DriveFileRenameOutlineIcon
+              sx={{
+                marginRight:"5px",
+                marginTop:"-5px"
+              }}></DriveFileRenameOutlineIcon>
+              Rename</MenuItem>
+
+              <MenuItem onClick={()  => {handleOpenNew(); setAdminNewApp(app._id);handleRecord(app._id)}}>
               <PublishIcon
               sx={{
                 marginRight:"5px",
                 marginTop:"-5px"
               }}></PublishIcon>
               Record</MenuItem>
-              <MenuItem onClick={() => {handleClose1(index); setAppDelete(index); handleDeleteApp(app._id); handleUpdateApp(app._id);}}>
+
+              <MenuItem onClick={() => {handleClose1(index); setAppDelete(index); handleDeleteApp(app._id); handleUpdateApp(app._id, index);}}>
               <DeleteOutlineIcon
               sx={{
                 marginRight:"5px",
@@ -504,28 +678,28 @@ const handleCheckboxPicked1 = (event) => {
                 marginBottom:"30px"
               }}></hr>
               {
-                foundNewApp?.items.map((item, index) => (
+                dataRecord?.length>0 && dataRecord.map((item, index) => (
               <Box
               
               key={index}
               >
-              {item === '1' && (
-                    <div
-                          style={{
-                            margin:"10px",
-                          }}>
-
-                      
-                             <TextField 
-                             sx={{
-                              width:"100%",
-                              marginBottom:"20px"
-                             }}
-                             id="outlined-basic" onChange={(e) => setInput(e.target.value)} value={input} label={inputFinal} variant="outlined" />
-                            {/* <p>Số kí tự{}</p> */}
-                          </div>
-                  )}
-                  {item === '3' && (
+              {item.id === 1 && (
+              <Box style={{ margin: '10px' }}>
+                <Typography>{item.name || 'Input'}</Typography>
+                <TextField
+                  sx={{
+                    width: '100%',
+                    marginBottom: '20px',
+                  }}
+                  id={`outlined-basic-${index}`}
+                  onChange={(e) => handleInputChangeResult(index, e.target.value)}
+                  value={inputValues[index] || ''}
+                  variant="outlined"
+                />
+              </Box>
+            )}
+                
+                  {item.id === 3 && (
                     <div
                           style={{
                             margin:"10px 0 20px 10px",
@@ -536,24 +710,31 @@ const handleCheckboxPicked1 = (event) => {
                             fontWeight:"bold",
                             marginLeft:"-10px"
                           }}>Label</label>
-                            <p>{label}</p>
+                            <p>{item.name ||"Label"}</p>
                           </div>
                     )}
-                  {item === '4' && (
+                  {item.id === 4 && (
                     <div
                           style={{
                             margin:"10px 0 20px 10px",
 
                           }}>
+                          <Typography>{item.name ||"Text area"}</Typography>
                            
-                             <TextField 
-                             sx={{
-                              width:"100%"
-                             }}id="outlined-basic"  onChange={(e) => setTextArea(e.target.value)} value={textArea} label={textAreaLocal||"Text area"} variant="outlined" />
-                          
+                          <TextField
+                            sx={{
+                              width: '100%',
+                              marginBottom: '20px',
+                            }}
+                            id={`outlined-basic-${index}`}
+                            onChange={(e) => handleInputChangeResult(index, e.target.value)}
+                            value={inputValues[index] || ''}
+                            // label={`inputFinal-${index}`}
+                            variant="outlined"
+                          />
                           </div>
                   )}
-                  {item === '5' && (
+                  {item.id === 5 && (
                     <Box 
                     sx={{
                       paddingLeft:"10px"
@@ -563,7 +744,7 @@ const handleCheckboxPicked1 = (event) => {
                       fontWeight:"bold",
                       marginTop:"10px"
                     }}>
-                      {inputValueFromCheckBox|| "Check box"}
+                      {item.name|| "Check box"}
                     </Typography>
                     <FormGroup aria-label="position" row>
                       <FormControlLabel
@@ -686,7 +867,7 @@ const handleCheckboxPicked1 = (event) => {
                         onChange={handleOptionChange}
                         // defaultValue="admin"
                         renderInput={(params) => (
-                            <TextField {...params} label="Add user..." placeholder="Favorites" />
+                            <TextField {...params} label="Add user..." placeholder="Add..." />
                         )}
                         sx={{ width: '400px',
                         marginTop:"35px" }}
@@ -756,6 +937,48 @@ const handleCheckboxPicked1 = (event) => {
                         </div>
                     </Box>
                 </Modal>
+
+                <Modal
+              open={openModalRename}
+              onClose={handleCloseRename}
+              aria-labelledby="modal-modal-title"
+              aria-describedby="modal-modal-description"
+            >
+              <Box sx={style}>
+                <Typography 
+                sx={{
+                  marginBottom:"15px",
+                }} variant='h4'>Rename form</Typography>
+                <hr></hr>
+                <TextField className='input-rename' sx={{
+                  width:"100%",
+                  marginTop:"15px"
+                }} 
+                ref={inputReference}
+                id="filled-basic" 
+                label="New name" 
+                variant="filled" 
+                onChange={(e)=>{setNewNameForm(e.target.value)}}
+                />
+                <Box sx={{
+                  display:"flex",
+                  marginTop:"30px"
+                }}>
+                  <Box sx={{
+                    width:"50%"
+                  }}>
+                    <Button variant="outlined"  onClick={handleCloseRename}>Close</Button>
+                  </Box>
+                  <Box sx={{
+                    width:"50%",
+                    display:"flex",
+                    justifyContent:"flex-end"
+                  }}>
+                    <Button variant="contained" onClick={handleSaveRename}>Save</Button>
+                  </Box>
+                </Box>
+              </Box>
+            </Modal>
            
       </div>
       </div>

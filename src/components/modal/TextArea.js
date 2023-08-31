@@ -18,7 +18,8 @@ export default function TextArea({
     onFormChange1,
     field,
     handleField,
-    setTextAreaValueSave
+    setTextAreaValueSave,
+    nameItem
   }) {
 
    

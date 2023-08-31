@@ -8,8 +8,13 @@ function Resize(
     {      
     key,
     id,
+    index,
     type,
     text,
+    name,
+    board,
+    setBoard,
+    setValueCard,
     position,
     handleDrop,
     isChecked,
@@ -37,7 +42,13 @@ function Resize(
     setSample2,
     deleteItem,
     handleChangeState,
-    idItemsDrop
+    idItemsDrop,
+    selectedItem,
+    setIndexDelete,
+    handleDeleteItem,
+    mergedItems,
+    handleData
+
     }
 ) {
   const ref = useRef(null);
@@ -156,7 +167,6 @@ function Resize(
       resizerLeft.removeEventListener("mousedown", onMouseDownLeftResize);
     };
   }, []);
-//   const displayStyle = deleteItem  ? 'block' : 'none';
 
   return (
     <div className="container1">
@@ -176,6 +186,8 @@ function Resize(
         <DraggableElement          
             key={key}
             id={id}
+            index={index}
+            board={board}
             type={type}
             text={text}
             position={position}
@@ -205,6 +217,13 @@ function Resize(
             setSample2={setSample2}
             handleChangeState={handleChangeState}
             idItemsDrop={idItemsDrop}
+            setBoard={setBoard}
+            selectedItem={selectedItem}
+            setIndexDelete={setIndexDelete}
+            handleDeleteItem={handleDeleteItem}
+            mergedItems={mergedItems}
+            name={name}
+            handleData={handleData}
           />
         </Box>
       </div>

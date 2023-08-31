@@ -19,6 +19,7 @@ const style = {
 };
 
 export default function UserPage({
+  formsNoUser,
     inputValueSave,
     textAreaValueSave,
     apps,
@@ -95,10 +96,11 @@ export default function UserPage({
     <div
     style={{
         marginTop:"30px",
-        width:"100%",
+        width:"95.5%",
         boxShadow: "rgba(0, 0, 0, 0.24) 0px 3px 8px",
         padding:"30px",
-        borderRadius:"10px"
+        borderRadius:"10px",
+        
 
     }}>
     
@@ -117,31 +119,16 @@ export default function UserPage({
             </div>
             ))}
         </div>
-        <div style={{
-          display:"flex"
+        <Box style={{
+          display:"flex",
+          flexWrap: "wrap",
         }}>
-          {/* {
-            apps.map((app, index) => (
-              <div>
-               {app.name}
-              </div>
-            ))
-          } */}
-
-          {/* <div>Téttt</div> */}
-          {/* {
-            appNotAuthors.map((app, index)=>(
-              <div>
-                {app.name}
-              </div>
-            ))
-          } */}
           {
-            appsEither.length>0 ?(appsEither.map((app, index) => (
-          <div>
+            formsNoUser?.length>0 ?(formsNoUser.map((app, index) => (
+          <Box sx= {{ wordWrap: "break-word"}}>
                <Button 
                sx={{
-            marginRight:"25px",
+            margin:"15px",
             padding:"5px",
             backgroundColor:"white",
             ':hover':{
@@ -154,7 +141,19 @@ export default function UserPage({
          
           }} key={index}
           onClick={() =>{handleOpen(); setIdItemUser(app._id);}}> {app.name}</Button>
-               <Modal
+              
+          </Box>
+        ))):
+        (
+          <Box
+          sx={{
+          paddingLeft:"80%"
+        }}>
+            No app
+          </Box>
+        )
+        }
+        <Modal
                   open={open}
                   onClose={handleClose}
                   aria-labelledby="modal-modal-title"
@@ -269,18 +268,7 @@ export default function UserPage({
 
                   </Box>
                 </Modal>
-          </div>
-        ))):
-        (
-          <Box
-          sx={{
-          paddingLeft:"80%"
-        }}>
-            No app
-          </Box>
-        )
-        }
-        </div>
+        </Box>
         </Box>
     </div>
   )

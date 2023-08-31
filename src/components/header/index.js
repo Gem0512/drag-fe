@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, {useEffect} from 'react';
 import { styled, alpha } from '@mui/material/styles';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
@@ -15,6 +15,9 @@ import AccountCircle from '@mui/icons-material/AccountCircle';
 import MailIcon from '@mui/icons-material/Mail';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import MoreIcon from '@mui/icons-material/MoreVert';
+import Cookies from 'js-cookie';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -57,6 +60,7 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 }));
 
 export default function PrimarySearchAppBar() {
+  const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
 
@@ -75,10 +79,45 @@ export default function PrimarySearchAppBar() {
     setAnchorEl(null);
     handleMobileMenuClose();
   };
+  const getHeaders = () => {
+    const access_token = Cookies.get('access_token');
+    console.log(access_token)
+    if (access_token) {
+      return { Authorization: `Bearer ${access_token}` };
+    }
+    return {};
+  };
 
-  const handleMenuClose1 = () => {
-    localStorage.setItem("isLogin", false);
-    window.location.href = '/';
+  useEffect(() => {
+    //đã login => redirect to '/'
+    if ( Cookies.get('access_token')) {
+        // navigate('/');
+        console.log(Cookies.get('access_token'));
+        navigate('/home');
+    }
+}, [])
+const access_token = Cookies.get('access_token');
+
+  const myHeaders = new Headers();
+  myHeaders.append('Content-Type', 'application/json');
+  myHeaders.append('Authorization', `Bearer ${access_token}`);
+
+  const handleMenuClose1 = async  () => {
+    
+    console.log(JSON.parse(Cookies.get('user')));
+   
+
+   try{
+    fetch('http://localhost:4000/api/v1/auth/logout', {
+      method: 'POST',
+      headers: myHeaders,
+      })
+   
+    navigate('/');
+   }
+   catch (error){
+    console.log("Đã có lỗi khi logout:", error)
+   }
 
   };
 

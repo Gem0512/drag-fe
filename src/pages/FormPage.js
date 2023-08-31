@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react'
+import React, {useState, useEffect, useLayoutEffect} from 'react'
 import Button from '@mui/material/Button';
 import Element from "../components/main/Element"
 import DraggableElement from "../components/main/DraggableElement";
@@ -7,6 +7,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import "../components/css/FormPage.css"
 import Resize from "../components/resize/Resize"
 import Box from '@mui/material/Box';
+import Cookies from 'js-cookie';
 
 
 // async function fetchData(itemId) {
@@ -64,30 +65,49 @@ export default function FormPage({
   idItemsDrop,
   setBoard,
   storedObject,
-  item
+  selectedItem,
+  item,
+  // itemsWithId,
+  mergedItems,
+  setIndexDelete,
+  handleDeleteItem,
+  oldData,
+  handleData
  }) {
  
+  const access_token = Cookies.get('access_token');
 
-  
+  const myHeaders = new Headers();
+  myHeaders.append('Content-Type', 'application/json');
+  myHeaders.append('Authorization', `Bearer ${access_token}`);
+
+  useLayoutEffect(()=>{
+    handleData();
+  })
 
 
+// useEffect(()=> {  
+//   const idOleData= (localStorage.getItem('oldData'));  
+//   const handleData = async()=>{
+//     try{
+//       const response = await fetch(`http://localhost:4000/api/v1/forms/getFormById/${idOleData}`, {
+//         method: 'GET',
+//         headers: myHeaders,
+//         })
+//         const responseData = await response.json();
+       
+      
+//         console.log(responseData.data?.items);
+//         console.log("yes")
+//      }
+//      catch (error){
+//       console.error('Lỗi khi lấy danh sách form ủy quyền:', error);
+//      }
+//   }
+//   handleData();
+//   }, [idItemsDrop])
 
-    // console.log(item)
-    
-    // console.log(idItemSave)
-
-    // localStorage.setItem("board", board);
-    // const listBoard=  localStorage.getItem("board");
-
-    // useEffect(() => {
-    //   const storedObject = JSON.parse(localStorage.getItem('board'));
-    //   setBoard(storedObject || {});
-    // }, []);
-  
-    // }
-    const listItemNew= [...(JSON.parse(localStorage.getItem('listItemOld')))];
-
-    console.log(">>>",listItemNew)
+ 
 
 
   return (
@@ -126,15 +146,17 @@ export default function FormPage({
           ))}
         </div>
       </div>
-      <div className="Board" ref={drop}
-      >{
-        board.length<=0 && (storedObject.map((element)=>(
+     
+      {/* {
+         (itemsWithId?.map((element, index)=>(
           !clickedIndexes.includes(element.id)&&(
                <Resize        
             key={element.id}
             id={element.id}
             type={element.type}
             text={element.text}
+            board={board}
+            index={index}
             position={element.position}
             handleDrop={handleDrop}
             isChecked={isChecked}
@@ -164,17 +186,22 @@ export default function FormPage({
             setDeleteState={setDeleteState}
             handleChangeState={handleChangeState}
             idItemsDrop={idItemsDrop}
+            setBoard={setBoard}
+            selectedItem={selectedItem}
           />
          
           )
         )))
-      }
-     
-        {board.length>0 && (board.map((element) => (  
+      } */}
+      <div className="Board" ref={drop}
+      >
+        {mergedItems.length >0 && (mergedItems.map((element, index) => (  
           !clickedIndexes.includes(element.id)&&(
                <Resize        
             key={element.id}
             id={element.id}
+            index={index}
+            name={element.name}
             type={element.type}
             text={element.text}
             position={element.position}
@@ -206,14 +233,21 @@ export default function FormPage({
             setDeleteState={setDeleteState}
             handleChangeState={handleChangeState}
             idItemsDrop={idItemsDrop}
+            board={board}
+            selectedItem={selectedItem}
+            setIndexDelete={setIndexDelete}
+            handleDeleteItem={handleDeleteItem}
+            mergedItems={mergedItems}
+            handleData={handleData}
           />
          
           )
          
         )))}
-        {listItemNew.map((element, index) => (
+        {/* {listItemNew.map((element, index) => (
           !clickedIndexes.includes(element)&&(
-          <Resize        
+          <Resize     
+            index={index}   
             key={element}
             id={element}
             type={element}
@@ -257,9 +291,11 @@ export default function FormPage({
             setDeleteState={setDeleteState}
             handleChangeState={handleChangeState}
             idItemsDrop={idItemsDrop}
+            board={board}
+            selectedItem={selectedItem}
           />
       
-    )))}
+    )))} */}
       </div>
       <div>
       

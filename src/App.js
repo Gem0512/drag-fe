@@ -16,19 +16,8 @@ function App() {
   // const [role, setRole] = useState('');
 
   const role= localStorage.getItem('role');
-  useEffect(() => {
-    // Gọi API từ backend khi component được render
-    axios.get('http://localhost:4000/api/email-last')
-      .then((response) => {
-        setEmail(response.data.email);
-        localStorage.setItem("email",response.data.email ) // Lưu thông tin người dùng cuối cùng vào state
-        console.log(response.data)
-      })
-      .catch((error) => {
-        console.error('Lỗi khi gọi API:', error);
-      });
-  }, []);
-  console.log(email);
+ 
+  
 
   return (
     <DndProvider backend={HTML5Backend}>
