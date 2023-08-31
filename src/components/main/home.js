@@ -196,7 +196,8 @@ export default function Home(
       };
       
      
-      setBoard((board) => [...board, newItem]);
+      if(check) setBoard((board) => [...board, newItem]);
+      else setBoard([]);
      
       setDroppedItems((prevItems) => [...prevItems, item.id]);
       handleLoadData();
@@ -255,11 +256,17 @@ export default function Home(
       // fetchItems();
     }
 
+    let check = true;
+
 
 
     const handleClick1 = async() => {
-      
-      mergedItems = itemsToMerge;
+      // setCheck(false);
+      setBoard([]);
+      check=false;
+      console.log(check);
+      // itemsToMerge = itemsToMerge;
+      // mergedItems = itemsToMerge;
   
         const now = new Date();
         setCurrentTime(now.toLocaleTimeString());
@@ -717,6 +724,7 @@ export default function Home(
    
 
   //  const mergedItems=[...oldData?.items,...board];
+// const [check, setCheck]= useState(true);
 
   let itemsToMerge = [];
 
@@ -727,11 +735,19 @@ export default function Home(
     console.error("oldData.items is not an array.");
   }
 
-  if (Array.isArray(board)) {
-    itemsToMerge = [...itemsToMerge, ...board];
+  if (Array.isArray(board) && check) {
+    if(check){
+      itemsToMerge = [...itemsToMerge, ...board];
+    }
+    // setCheck(true);
+    check=true;
   } else {
     console.error("board is not an array.");
   }
+
+
+
+  // console.log(check);
 
 
   // Sử dụng mảng đã kiểm tra để tạo mergedItems
