@@ -69,7 +69,6 @@ export default function AdminPage({
   const handleClose = () => setOpen(false);
 
   const handleGoToPage1 = () => {
-    console.log(mergedItems);
     localStorage.setItem("board", JSON.stringify(''));
     handleChangePage(null, 0);
     setBoard([]);
@@ -115,6 +114,10 @@ export default function AdminPage({
   
    
     }
+    useEffect (()=>{
+      handleData();
+      fetchItems();
+    })
 
     const access_token = Cookies.get('access_token');
 
@@ -311,8 +314,6 @@ export default function AdminPage({
               const responseData = await response.json();
               setDataRecord(responseData.data?.items);
             
-              console.log(responseData.data?.items);
-              console.log("yes")
            }
            catch (error){
             console.error('Lỗi khi lấy danh sách form ủy quyền:', error);
@@ -321,7 +322,7 @@ export default function AdminPage({
            handleData();
   }
 
-  console.log(dataRecord)
+
 
   const foundNewApp = apps.find(app => app._id === adminNewApp);
 
@@ -430,8 +431,7 @@ const handleCheckboxPicked1 = (event) => {
     fetchItems();
     handleData();
   };
-  console.log(inputValues)
-
+ 
 
   const handleSubmit = async (event) => {
     setOpen(false);

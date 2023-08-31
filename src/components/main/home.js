@@ -251,8 +251,8 @@ export default function Home(
       } catch (error) {
         console.log("Đã có lỗi khi thêm items:", error);
       }
-      handleData();
-      fetchItems();
+      // handleData();
+      // fetchItems();
     }
 
 
@@ -739,7 +739,7 @@ export default function Home(
   // Sử dụng mảng đã kiểm tra để tạo mergedItems
   const mergedItems = itemsToMerge;
 
-  console.log(mergedItems);
+
    const [indexDelete, setIndexDelete] = useState()
 
   const handleDeleteItem =() =>{
@@ -752,18 +752,20 @@ export default function Home(
      catch (error){
       console.log("Đã có lỗi khi delete form:", error)
      }
-     console.log(idItemsDrop);
+     console.log(idItemsDrop, indexDelete);
      console.log(".>>>>")
+     handleData();
+     fetchItems();
   }
   useEffect(() =>{
     if(idItemsDrop){
       localStorage.setItem("oldData", idItemsDrop)
     }
   })
-  useLayoutEffect(()=>{
-    handleData();
-    fetchItems();
-  })
+  // useLayoutEffect(()=>{
+  //   handleData();
+  //   fetchItems();
+  // })
   
   
   return (
@@ -821,6 +823,8 @@ export default function Home(
           backgroundColor: value === 'three' ? 'rgba(0, 0, 0, 0.2)' : 'transparent',
         }}
          onClick={()=> {
+          handleData();
+      fetchItems();
         // window.location.reload();
        }}
          label="App" {...a11yProps(3)} />
