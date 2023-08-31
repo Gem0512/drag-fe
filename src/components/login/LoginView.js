@@ -20,6 +20,15 @@ const LoginView = ({
   role,
   setRole,
 }) => {
+
+  useEffect(() => {
+    const myCookieValue = Cookies.get('access_token');
+
+    if (myCookieValue) {
+      // Điều hướng đến trang /home nếu có giá trị cookie
+      window.location.href = '/home';
+    }
+  }, []);
   // console.log(email);
   const notify = () => toast("Đăng ký thành công!");
 

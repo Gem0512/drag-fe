@@ -259,13 +259,13 @@ export default function Home(
 
     const handleClick1 = async() => {
       
-      
+      mergedItems = itemsToMerge;
   
         const now = new Date();
         setCurrentTime(now.toLocaleTimeString());
         showToastMessage();
         
-        handleAddItemDropItemDrop();
+        // handleAddItemDropItemDrop();
 
         handleLoadData();
         handleData();
@@ -633,7 +633,7 @@ export default function Home(
       const [items, setItems]= useState([]);
 
 
-      const [idItemsDrop, setIdItemsDrop]=useState();
+      const [idItemsDrop, setIdItemsDrop]=useState(localStorage.getItem('idItemsDrop'));
    
 
 
@@ -720,8 +720,6 @@ export default function Home(
 
   let itemsToMerge = [];
 
-
-
   if (Array.isArray(oldData?.items)) {
     itemsToMerge = oldData.items;
    
@@ -737,10 +735,10 @@ export default function Home(
 
 
   // Sử dụng mảng đã kiểm tra để tạo mergedItems
-  const mergedItems = itemsToMerge;
+  let mergedItems = itemsToMerge;
 
 
-   const [indexDelete, setIndexDelete] = useState()
+   const [indexDelete, setIndexDelete] = useState(localStorage.getItem("indexDelete"))
 
   const handleDeleteItem =() =>{
     try{

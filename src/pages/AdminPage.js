@@ -68,11 +68,12 @@ export default function AdminPage({
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
-  const handleGoToPage1 = () => {
+  const handleGoToPage1 = (id) => {
     localStorage.setItem("board", JSON.stringify(''));
     handleChangePage(null, 0);
     setBoard([]);
     handleData();
+    localStorage.setItem('idItemsDrop', id);
     // window.location.reload();
   };
 
@@ -621,7 +622,7 @@ const handleCheckboxPicked1 = (event) => {
               }}></PersonAddAltIcon>
               Add user</MenuItem>
 
-              <MenuItem onClick={()=> {setNameApp(app.name);setIdItemsDrop(app._id); handleGoToPage1(); handleData();} }>
+              <MenuItem onClick={()=> {setNameApp(app.name);setIdItemsDrop(app._id); handleGoToPage1(app._id); handleData();} }>
               <EditNoteIcon
               sx={{
                 marginRight:"5px",

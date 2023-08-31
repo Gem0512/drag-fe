@@ -345,6 +345,9 @@ function DraggableElement({
   const inputFinal =localStorage.getItem('inputValue');
 // console.log(inputFinal);
  
+const handleTargetIndex =(index) =>{
+  localStorage.setItem("indexDelete", index);
+}
 //  console.log(name);
   return (
     <div className="item-drag" ref={dropRef}
@@ -670,7 +673,7 @@ function DraggableElement({
            
 
             <button className="option" 
-            onClick={() =>{setIndexDelete(index);handleDeleteItem();}}
+            onClick={() =>{setIndexDelete(index);handleDeleteItem(); handleTargetIndex(index)}}
             
             >
               <img
