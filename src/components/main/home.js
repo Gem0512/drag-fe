@@ -196,8 +196,8 @@ export default function Home(
       };
       
      
-      if(check) setBoard((board) => [...board, newItem]);
-      else setBoard([]);
+       setBoard((board) => [...board, newItem]);
+     
      
       setDroppedItems((prevItems) => [...prevItems, item.id]);
       handleLoadData();
@@ -256,15 +256,15 @@ export default function Home(
       // fetchItems();
     }
 
-    let check = true;
+    // let check = true;
 
 
 
     const handleClick1 = async() => {
       // setCheck(false);
       setBoard([]);
-      check=false;
-      console.log(check);
+      // check=false;
+      // console.log(check);
       // itemsToMerge = itemsToMerge;
       // mergedItems = itemsToMerge;
   
@@ -735,12 +735,12 @@ export default function Home(
     console.error("oldData.items is not an array.");
   }
 
-  if (Array.isArray(board) && check) {
-    if(check){
+  if (Array.isArray(board) ) {
+   
       itemsToMerge = [...itemsToMerge, ...board];
-    }
+    
     // setCheck(true);
-    check=true;
+   
   } else {
     console.error("board is not an array.");
   }
