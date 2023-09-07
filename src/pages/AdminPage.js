@@ -342,19 +342,20 @@ const [sample2, setSample2]=  useState();
 
 const handleCheckboxPicked = (event) => {
   setIsPicked(event.target.checked);
-  if(isPicked){
+  if(isPicked===false){
     setSample1(valueSample1);
   }
   else setSample1('');
 };
+
+
 const handleCheckboxPicked1 = (event) => {
   setIsPicked1(event.target.checked); 
-  if(isPicked1){
+  if(isPicked1===false){
     setSample2(valueSample2);
   }
   else setSample2('');
 };
-
 
   const label = localStorage.getItem("label");
   const textAreaLocal = localStorage.getItem("inputValueFromTextArea");
@@ -427,21 +428,40 @@ const handleCheckboxPicked1 = (event) => {
   const handleInputChangeResult = (index, value) => {
     setInputValues((prevValues) => ({
       ...prevValues,
-      [index]:value, // Lưu giá trị của input theo chỉ số index
+      [index]:value, 
+      3: filteredItems? filteredItems:prevValues[3],
+      5: sample1? sample1:prevValues[5],
+      6: sample2? sample2:prevValues[6],// Lưu giá trị của input theo chỉ số index
     }));
     fetchItems();
     handleData();
   };
  
-
+  const handleInputChangeResult1 = (index, value) => {
+    setInputValues((prevValues) => ({
+      ...prevValues,
+      [index]:value, 
+    }));
+    fetchItems();
+    handleData();
+  };
+ 
+// const [labelValue, setLabelValue]= useState();
+const filteredItems = dataRecord
+  .filter(item => item.id === 3)
+  .map(item => item.name||"Label")
+  .join();
+// console.log(filteredItems);
   const handleSubmit = async (event) => {
+
     setOpen(false);
   try {
     const response = await fetch(`http://localhost:4000/api/v1/results/createResult`, {
       method: 'POST',
       headers: myHeaders,
       body: JSON.stringify({
-        inputValues
+        inputValues,
+       
       })
     });
 
@@ -728,7 +748,7 @@ const handleCheckboxPicked1 = (event) => {
                               marginBottom: '20px',
                             }}
                             id={`outlined-basic-${index}`}
-                            onChange={(e) => handleInputChangeResult(index, e.target.value)}
+                            onChange={(e) => handleInputChangeResult1(index, e.target.value)}
                             value={inputValues[index] || ''}
                             // label={`inputFinal-${index}`}
                             variant="outlined"
@@ -748,7 +768,7 @@ const handleCheckboxPicked1 = (event) => {
                       {item.name|| "Check box"}
                     </Typography>
                     <FormGroup aria-label="position" row>
-                      <FormControlLabel
+                    <FormControlLabel
                         value="end"
                         control={<Checkbox />}
                         label={valueSample1}

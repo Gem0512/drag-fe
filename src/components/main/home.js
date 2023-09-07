@@ -252,21 +252,15 @@ export default function Home(
       } catch (error) {
         console.log("Đã có lỗi khi thêm items:", error);
       }
-      // handleData();
-      // fetchItems();
+    
     }
-
-    // let check = true;
 
 
 
     const handleClick1 = async() => {
       // setCheck(false);
       setBoard([]);
-      // check=false;
-      // console.log(check);
-      // itemsToMerge = itemsToMerge;
-      // mergedItems = itemsToMerge;
+   
   
         const now = new Date();
         setCurrentTime(now.toLocaleTimeString());
@@ -410,7 +404,7 @@ export default function Home(
               checked={checkbox.checked}
               onChange={() => handleCheckboxChangee2(index)}
               />
-              <p>{inputValues2[index] || ''}</p>
+              <p>{inputValues2[index] || ''} test</p>
           </div>
           ));
       };
@@ -520,7 +514,7 @@ export default function Home(
               checked={checkbox.checked}
               onChange={() => handleCheckboxChange(index)}
               />
-              <p>{inputValues[index] || ''}</p>
+              <p>{inputValues[index] || ''} </p>
           </div>
           ));
       };
