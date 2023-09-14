@@ -12,7 +12,7 @@ import ViewsPage from "../../pages/ViewsPage"
 // import Test from "./Test"
 // import Test from "../../test/Test"
 import Testt from "./Test"
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useDrop } from "react-dnd";
@@ -143,7 +143,8 @@ export default function Home(
   const handleChange = (event, newValue) => {
     setValue(newValue);
     // window.location.reload();
-
+    handleData();
+    fetchItems();
   };
 
   const [currentTime, setCurrentTime] = useState('');
@@ -685,7 +686,8 @@ export default function Home(
 
 
 
-   
+    const [state1, setState1]= useState(true);
+
   
     const idItemSave =item?.items;
     if(idItemSave)localStorage.setItem("listItemOld", JSON.stringify(idItemSave||[]));
@@ -710,11 +712,12 @@ export default function Home(
        }
     }
     useEffect(()=> {  
-      
-      
-      // handleData();
+      // window.location.reload();
       }, [idItemsDrop])
 
+      useEffect(()=>{
+        handleData();
+      },[idItemsDrop])
    
 
   //  const mergedItems=[...oldData?.items,...board];
@@ -770,11 +773,11 @@ export default function Home(
       localStorage.setItem("oldData", idItemsDrop)
     }
   })
-  // useLayoutEffect(()=>{
-  //   handleData();
-  //   fetchItems();
-  // })
-  
+  useLayoutEffect(()=>{
+    handleData();
+    fetchItems();
+  },[idItemsDrop])
+
   
   return (
 
@@ -804,25 +807,28 @@ export default function Home(
           }}
          value={value} onChange={handleChange} aria-label="basic tabs example">
           <Tab sx={{
+          
           border: "1px solid #ccc",
           padding:"10px 50px",
           backgroundColor: value === 'one' ? 'rgba(0, 0, 0, 0.2)' : 'transparent',
         }}
+        onClick={()=>{navigate("/home/edit");}}
          label="Form" {...a11yProps(0)} />
-          <Tab sx={{
+         {/* <Link to="/home/view">  */}
+         <Tab sx={{
           border: "1px solid #ccc",
           padding:"10px 50px",
           backgroundColor: value === 'two' ? 'rgba(0, 0, 0, 0.2)' : 'transparent',
         }}
-         onClick={()=> {
-        // window.location.reload();
-       }}
+        onClick={()=>{navigate('/home/view');}}
         label="Views data" {...a11yProps(1)} />
+        {/* </Link> */}
           <Tab sx={{
           padding:"10px 50px",
           border: "1px solid #ccc",
           backgroundColor: value === 'three' ? 'rgba(0, 0, 0, 0.2)' : 'transparent',
         }}
+        onClick={()=>{navigate("/home/graphs");}}
          label="Graphs" {...a11yProps(2)} />
         
         <Tab sx={{
@@ -831,9 +837,11 @@ export default function Home(
           backgroundColor: value === 'three' ? 'rgba(0, 0, 0, 0.2)' : 'transparent',
         }}
          onClick={()=> {
+          
           handleData();
       fetchItems();
         // window.location.reload();
+        navigate("/home/app");
        }}
          label="App" {...a11yProps(3)} />
         </Tabs>
@@ -888,6 +896,7 @@ export default function Home(
             handleDeleteItem={handleDeleteItem}
             oldData={oldData}
             handleData={handleData}
+            fetchItems={fetchItems}
           ></FormPage>
       </CustomTabPanel>
       
@@ -988,6 +997,8 @@ export default function Home(
           mergedItems={mergedItems}
           handleData={handleData}
           setBoard={setBoard}
+          nameApp={nameApp}
+          setState1={setState1}
           sx={{
             width:"100%",
             

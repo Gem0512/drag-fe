@@ -19,6 +19,7 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
 import Cookies from 'js-cookie';
 import DriveFileRenameOutlineIcon from '@mui/icons-material/DriveFileRenameOutline';
+import { Link, useNavigate } from 'react-router-dom';
 
 const style = {
   position: 'absolute',
@@ -51,6 +52,7 @@ export default function AdminPage({
     appAuthors,
     isChecked,
     setNameApp,
+    nameApp,
     renderButton,
     renderButton2,
     setSelectedItem,
@@ -61,24 +63,36 @@ export default function AdminPage({
     setOldData,
     mergedItems,
     handleData,
-    setBoard
+    setBoard,
+    setState1
     // handleUpdateApp
 }) {
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
+  const navigate = useNavigate();
 
-  const handleGoToPage1 = (id) => {
+  const handleGoToPage1 = async(id) => {
+    await setIdItemsDrop(id);
     localStorage.setItem("board", JSON.stringify(''));
     handleChangePage(null, 0);
     setBoard([]);
-    handleData();
+    
     localStorage.setItem('idItemsDrop', id);
     // window.location.reload();
+    fetchItems();
+           handleData();
+    // setTimeout(() => {
+    //        fetchItems();
+    //        handleData();
+    //     }, 1000)
+    console.log("<<<", idItemsDrop, id);
+    navigate(`/home/edit/${id}`);
+    
   };
+  // console.log(idItemsDrop)
+  console.log(">>>>", localStorage.getItem('idItemsDrop'));
 
-
-  
   const handleGoToPageApp = () => {
     handleChangePage(null, 3);
   };
@@ -112,13 +126,14 @@ export default function AdminPage({
       const newMenuOpenStates = [...menuOpenStates];
     newMenuOpenStates[index] = !newMenuOpenStates[index];
     setMenuOpenStates(newMenuOpenStates);
-  
+    handleData();
+    fetchItems();
    
     }
-    useEffect (()=>{
-      handleData();
-      fetchItems();
-    })
+    // useEffect (()=>{
+    //   handleData();
+    //   fetchItems();
+    // })
 
     const access_token = Cookies.get('access_token');
 
@@ -126,9 +141,9 @@ export default function AdminPage({
     myHeaders.append('Content-Type', 'application/json');
     myHeaders.append('Authorization', `Bearer ${access_token}`);
 
-  const handleButtonClick = () => {
+  const handleButtonClick =  async() => {
     try{
-      fetch('http://localhost:4000/api/v1/forms/createForm', {
+     await fetch('http://localhost:4000/api/v1/forms/createForm', {
         method: 'POST',
         headers: myHeaders,
         body: JSON.stringify({
@@ -148,8 +163,9 @@ export default function AdminPage({
     //       console.error(error);
     //     });
     fetchItems();
+    handleData();
       handleClose();
-        handleData();
+       
     
   };
 
@@ -436,7 +452,10 @@ const handleCheckboxPicked1 = (event) => {
     fetchItems();
     handleData();
   };
- 
+  window.addEventListener("load", function() {
+    handleData();
+    fetchItems();
+});
   const handleInputChangeResult1 = (index, value) => {
     setInputValues((prevValues) => ({
       ...prevValues,
@@ -447,10 +466,10 @@ const handleCheckboxPicked1 = (event) => {
   };
  
 // const [labelValue, setLabelValue]= useState();
-const filteredItems = dataRecord
+const filteredItems =  dataRecord?dataRecord
   .filter(item => item.id === 3)
   .map(item => item.name||"Label")
-  .join();
+  .join():"";
 // console.log(filteredItems);
   const handleSubmit = async (event) => {
 
@@ -477,6 +496,36 @@ const filteredItems = dataRecord
   handleData();
   handleCloseNew();
     };
+// const handleLoad=(id, name) =>{
+//   setNameApp(name);
+//   setIdItemsDrop(id);
+//   fetchItems();
+//   handleData();
+// }
+
+
+// useEffect(() => {
+//   // Khi nameApp hoặc idItemsDrop thay đổi, useEffect này sẽ được gọi
+//   // Bạn có thể đặt các logic liên quan đến fetchItems và handleData ở đây
+
+//   // Gọi fetchItems và handleData sau khi cập nhật state
+//   fetchItems();
+//   handleData();
+// }, [idItemsDrop]);
+
+const handleLoad = async (id, name) => {
+  try {
+    // Cập nhật state nameApp và idItemsDrop
+    await setNameApp(name);
+    await setIdItemsDrop(id);
+    await setState1(false);
+  
+   
+  } catch (error) {
+    console.error('Lỗi khi cập nhật state:', error);
+  }
+  console.log(idItemsDrop)
+};
 
 
   return (
@@ -642,13 +691,15 @@ const filteredItems = dataRecord
               }}></PersonAddAltIcon>
               Add user</MenuItem>
 
-              <MenuItem onClick={()=> {setNameApp(app.name);setIdItemsDrop(app._id); handleGoToPage1(app._id); handleData();} }>
-              <EditNoteIcon
+              {/* <Link to="/home/editForm"> */}
+                <MenuItem onClick={()=> { handleLoad(app._id, app.name);handleGoToPage1(app._id);} }>
+               <EditNoteIcon
               sx={{
                 marginRight:"5px",
                 marginTop:"-5px"
               }}></EditNoteIcon>
               Edit</MenuItem>
+              {/* </Link> */}
 
               <MenuItem onClick={()  => {handleOpenRename();setIdRename(app._id);}}>
               <DriveFileRenameOutlineIcon
@@ -666,7 +717,7 @@ const filteredItems = dataRecord
               }}></PublishIcon>
               Record</MenuItem>
 
-              <MenuItem onClick={() => {handleClose1(index); setAppDelete(index); handleDeleteApp(app._id); handleUpdateApp(app._id, index);}}>
+              <MenuItem onClick={() => {handleClose1(index); setAppDelete(index); handleDeleteApp(app._id); handleUpdateApp(app._id, index); handleData(); fetchItems();}}>
               <DeleteOutlineIcon
               sx={{
                 marginRight:"5px",

@@ -72,7 +72,8 @@ export default function FormPage({
   setIndexDelete,
   handleDeleteItem,
   oldData,
-  handleData
+  handleData,
+  fetchItems
  }) {
  
   const access_token = Cookies.get('access_token');
@@ -81,10 +82,11 @@ export default function FormPage({
   myHeaders.append('Content-Type', 'application/json');
   myHeaders.append('Authorization', `Bearer ${access_token}`);
 
-  useLayoutEffect(()=>{
-    handleData();
-  })
 
+  window.addEventListener("load", function() {
+    handleData();
+  
+});
 
 // useEffect(()=> {  
 //   const idOleData= (localStorage.getItem('oldData'));  
@@ -107,7 +109,14 @@ export default function FormPage({
 //   handleData();
 //   }, [idItemsDrop])
 
- 
+useEffect(() => {
+  // Khi nameApp hoặc idItemsDrop thay đổi, useEffect này sẽ được gọi
+  // Bạn có thể đặt các logic liên quan đến fetchItems và handleData ở đây
+
+  // Gọi fetchItems và handleData sau khi cập nhật state
+  fetchItems();
+  handleData();
+}, []);
 
 
   return (
@@ -118,7 +127,7 @@ export default function FormPage({
                 variant="contained" 
                 color="success" 
                 className="save-btn"
-                onClick={handleClick1}>
+                onClick={()=>{handleClick1(); handleData()}}>
                 Save form
               </Button>
               <ToastContainer 

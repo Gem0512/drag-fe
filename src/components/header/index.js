@@ -88,14 +88,14 @@ export default function PrimarySearchAppBar() {
     return {};
   };
 
-  useEffect(() => {
-    //đã login => redirect to '/'
-    if ( Cookies.get('access_token')) {
-        // navigate('/');
-        console.log(Cookies.get('access_token'));
-        navigate('/home');
-    }
-}, [])
+//   useEffect(() => {
+//     //đã login => redirect to '/'
+//     if ( Cookies.get('access_token')) {
+//         // navigate('/');
+//         console.log(Cookies.get('access_token'));
+//         navigate('/home');
+//     }
+// }, [])
 const access_token = Cookies.get('access_token');
 
   const myHeaders = new Headers();
@@ -113,7 +113,7 @@ const access_token = Cookies.get('access_token');
       headers: myHeaders,
       })
    
-    navigate('/');
+    navigate('/login');
     Cookies.remove('access_token');
     window.location.reload()
    }

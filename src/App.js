@@ -2,14 +2,17 @@ import React, {useEffect, useState } from "react";
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import './App.css';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, BrowserRouter } from 'react-router-dom';
 import Home from "./components/main/home";
 import HomeRecords from "./components/records/HomeRecords"
 import LoginView from "./components/login/LoginView"
 import Test from "./pages/Test"
 import axios from "axios";
 import Cookies from 'js-cookie';
-
+import FormPage from "./pages/FormPage"
+import AdminPage from "./pages/AdminPage"
+import ViewsPage from "./pages/ViewsPage"
+// import Test from "./pages/Test"
 function App() {
  
   const [users, setUsers] = useState([]);
@@ -22,14 +25,15 @@ function App() {
   const myCookieValue = Cookies.get('access_token');
 
   return (
+    
     <DndProvider backend={HTML5Backend}>
-       <Router>
+    <BrowserRouter>
+       {/* <Router> */}
       <Routes>
       <Route path="/home" 
           element={
             myCookieValue? 
             <Home 
-            role={role}
             />:
             <LoginView
             users={users}
@@ -41,13 +45,22 @@ function App() {
             // role={role}
             // setRole={setRole}
             ></LoginView>
-            } />
-        <Route path="/records" element={<HomeRecords />} />
-        <Route  path="/" 
+            } >
+             <Route path="app" exact element={<AdminPage />} />
+            <Route path="edit" element={<FormPage />} >
+              <Route path=":id" element={<FormPage />} />
+            </Route>
+            <Route path="view" element={<ViewsPage />} />
+            <Route path="graphs" element={<Test />} />
+            </Route>
+        {/* <Route path="/home/editForm" element={<FormPage/>} />
+        <Route path="/home/viewPage" element={<ViewsPage/>} /> */}
+
+        <Route  path="/login" 
           element={
             myCookieValue? 
             <Home 
-            role={role}
+            // role={role}
             />:
             <LoginView
             users={users}
@@ -65,7 +78,8 @@ function App() {
          <Test></Test>
         }></Route>
       </Routes>
-    </Router>
+    {/* </Router> */}
+    </BrowserRouter>
   </DndProvider>
   );
 }
