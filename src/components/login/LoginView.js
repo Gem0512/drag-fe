@@ -45,9 +45,9 @@ const LoginView = ({
         Cookies.set('access_token', response.data.data.access_token, { expires: 7 }); // Ví dụ: hết hạn sau 7 ngày
         Cookies.set('refresh_token', response.data.data.refresh_token, { expires: 14 });
         Cookies.set('user', JSON.stringify(response.data.data.user), { expires: 14 }); 
-        // window.location.href = '/home';
-        // navigate('/home');
-          window.location.reload()
+        window.location.href = '/home/app';
+        navigate('/home/app');
+          // window.location.reload()
       })
       .catch((error) => {
        
@@ -58,7 +58,7 @@ const LoginView = ({
       // window.location.reload()
   };
 
-  if(localStorage.getItem("isLogin")==="true")   window.location.href = '/home';
+  if(localStorage.getItem("isLogin")==="true")   window.location.href = '/home/app';
 
   const [showPassword, setShowPassword] = useState(true);
 
